@@ -44,11 +44,11 @@ III) Los boids dan una aproximacion realista y biologicamente correcta sobre los
 
 
 
-#Malla escamas de dragon:
+###Malla escamas de dragon:
 
 Detalles importantes:
 
-I) Es un modelo para probar principalmente algunos detalles sobre el paradigma lagrangeano y modelos de iluminacion.
+I) Es un modelo para probar principalmente algunos detalles sobre el paradigma lagrangiano y modelos de iluminacion.
 
 II) Permite probar distintos efectos como la resistencia al viento y algunos elementos viscosos.
 
