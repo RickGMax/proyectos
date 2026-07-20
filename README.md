@@ -10,6 +10,8 @@ II) El espacio en general es reducido con respecto a las dimensiones, pues resul
 
 III) En general el comportamiento del cancer respecto a la infeccion que provocan es de tipo exponencial, pues al infectar un objetivo este muta y se permite infectar a otras sin capacidad de regeneracion. De forma que es un crecimiento periodico sin decaimiento. 
 
+IV) Ademas, se pueden modificar las poblaciones en tiempo real, tal que se pueden probar distintos volumenes de cada tipo.
+
 Fallas evidentes: 
 
 I) no considera los distintos tipos de celulas blancas 
