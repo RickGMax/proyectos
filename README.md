@@ -2,6 +2,18 @@
 ##
 Basicamente cellswar es una simulacion(semi-realista) sobre las interacciones entre celulas normales, celulas blancas y celulas cancerigenas.Aqui se encuentran 2 ejemplos distintos con enfoque distintos, Cells2D y Cells3D, que se plantean de la misma manera pero con enfoques y herramientas distintas.
 
+Requerimientos:
+
+numpy>=1.26
+
+scipy>=1.12
+
+pyglet>=2.1
+
+moderngl>=5.10
+
+pillow>=10.0
+
 Detalles importantes:
 
 I) La grilla permite una visualizacion estilo warm-map, que permite caracterizar mejor la presencia de las poblaciones en el espacio.
@@ -29,3 +41,15 @@ II) Resulta ser bastante bueno con KD-trees, optimizando bastante la simulacion
 
 III) Los boids dan una aproximacion realista y biologicamente correcta sobre los comportamientos de las celulas
 
+
+
+
+#Malla escamas de dragon:
+
+Detalles importantes:
+
+I) Es un modelo para probar principalmente algunos detalles sobre el paradigma lagrangeano y modelos de iluminacion.
+
+II) Permite probar distintos efectos como la resistencia al viento y algunos elementos viscosos.
+
+III)
