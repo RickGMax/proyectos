@@ -1,6 +1,12 @@
 #*Cells'war:*          
 ##
-Basicamente cellswar es una simulacion(semi-realista) sobre las interacciones entre celulas normales, celulas blancas y celulas cancerigenas. 
+Basicamente cellswar es una simulacion(semi-realista) sobre las interacciones entre celulas normales, celulas blancas y celulas cancerigenas.Aqui se encuentran 2 ejemplos distintos con enfoque distintos, Cells2D y Cells3D, que se plantean de la misma manera pero con enfoques y herramientas distintas.
+
+detalles importantes:
+
+I) La grilla permite una visualizacion estilo warm-map, que permite caracterizar mejor la presencia de las poblaciones en el espacio.
+II) El espacio en general es reducido con respecto a las dimensiones, pues resulta relevante para el KD-Tree.
+III) En general el comportamiento del cancer respecto a la infeccion que provocan es de tipo exponencial, pues al infectar un objetivo este muta y se permite infectar a otras sin capacidad de regeneracion. De forma que es un crecimiento periodico sin decaimiento. 
 
 fallas evidentes: 
 
