@@ -99,12 +99,20 @@ modelos de iluminación y fuerzas externas.
 - Animación de la superficie en tiempo real.
 - Cámara y sistema angular controlables durante la ejecución.
 - Renderizado mediante **ModernGL** y **OpenGL 3.3 o superior**.
+- Utiliza el modelo de iluminacion de Phong
+- Tiene distintas velocidades para probar el efecto de cada fluido
 
 ### Controles
 
 | Tecla | Acción |
 | :---: | --- |
 | `R` | Reinicia únicamente el sistema angular. |
+| `Click izquierdo` | Genera una onda en el espacio clikeado. |
+| `P` | Pausa/Reanuda la simulacion. |
+| `1` | Efecto de viento. |
+| `2` | Efecto de agua. |
+| `3` | Efecto de aceite. |
+| `Flecha arriba y abajo` | arriba aumenta el efecto de la corriente, abajo lo disminuye. |
 
 > [!IMPORTANT]
 > La tecla `R` no reinicia el tiempo de simulación, el viento, la cámara ni la
