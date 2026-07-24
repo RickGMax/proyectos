@@ -23,7 +23,6 @@
 - [Descripción general](#descripción-general)
 - [Cells'War](#cellswar)
 - [Malla de escamas de dragón](#malla-de-escamas-de-dragón)
-- [Instalación de dependencias](#instalación-de-dependencias)
 - [Alcance de los modelos](#alcance-de-los-modelos)
 
 ## Descripción general
@@ -151,3 +150,13 @@ Desarrollado como una exploración de **simulación**, **física** y
 **computación gráfica**.
 
 </div>
+
+---
+## Redes de impulsos nerviosos
+
+### Características principales
+
+-Utiliza propiedades de grafos, vertices y aristas para modelar una red de neuronas.
+
+-Los vertices representan las neuronas y las aristas las conexiones(que vendrian siendo las conexiones entre dendritas), trae cierta componente grafica para mejorar la visualizacion de los organismos 
+
