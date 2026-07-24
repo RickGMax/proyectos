@@ -1,25 +1,11 @@
 """
-dragon_scales_springs.py
-
-Demo interactiva de una malla de escamas de dragón con:
-- superficie base curva y animada;
-- una escama rígida instanciada muchas veces;
-- un grado de libertad angular por escama;
-- resorte angular hacia el ángulo de reposo;
-- resortes de acoplamiento entre escamas vecinas;
-- amortiguamiento, viento y ondas de activación;
-- renderizado instanciado con ModernGL.
-
-Dependencias:
-    pip install numpy pyglet moderngl
-
-Ejecución:
-    python dragon_scales_springs.py
-
 Controles:
+    Clic izquierdo            : generar una onda en el punto tocado
     Arrastrar botón izquierdo : orbitar cámara
     Rueda del mouse           : acercar/alejar
-    Flecha arriba/abajo       : aumentar/disminuir viento
+    Flecha arriba/abajo       : cambiar nivel de viento/corriente
+    M                         : alternar aire, agua y aceite
+    1 / 2 / 3                 : seleccionar aire / agua / aceite
     Espacio                   : generar una onda en las escamas
     P                         : pausar/reanudar
     R                         : reiniciar escamas
@@ -27,32 +13,19 @@ Controles:
 """
 
 from __future__ import annotations
-
 import math
 import sys
 from dataclasses import dataclass
-
 import numpy as np
-
-try:
-    import pyglet
-    import moderngl
-except ImportError as exc:
-    missing = getattr(exc, "name", "una dependencia")
-    raise SystemExit(
-        f"Falta instalar {missing!r}.\n"
-        "Ejecuta: pip install numpy pyglet moderngl"
-    ) from exc
-
+import pyglet
+import moderngl
 
 pyglet.options["shadow_window"] = False
 
 from pyglet.window import key, mouse  # noqa: E402
 
+# Implementaciones matemáticas (vectores principalmente)
 
-# ---------------------------------------------------------------------------
-# Utilidades matemáticas
-# ---------------------------------------------------------------------------
 
 def normalize(v: np.ndarray, axis: int = -1, eps: float = 1.0e-8) -> np.ndarray:
     lengths = np.linalg.norm(v, axis=axis, keepdims=True)
@@ -100,10 +73,8 @@ def matrix_bytes(matrix: np.ndarray) -> bytes:
     """Convierte una matriz NumPy row-major al orden column-major de OpenGL."""
     return np.asarray(matrix.T, dtype=np.float32).tobytes()
 
-
-# ---------------------------------------------------------------------------
 # Modelo geométrico de la piel
-# ---------------------------------------------------------------------------
+
 
 @dataclass
 class SurfaceParameters:
@@ -114,6 +85,87 @@ class SurfaceParameters:
     wave_amplitude: float = 0.08
     wave_frequency: float = 0.95
     wave_speed: float = 1.40
+
+
+@dataclass(frozen=True)
+class FluidMedium:
+    """Propiedades físicas y visuales simplificadas del medio circundante."""
+
+    name: str
+    flow_name: str
+    damping_multiplier: float
+    inertia_multiplier: float
+    flow_multiplier: float
+    pulse_multiplier: float
+    surface_motion_multiplier: float
+    ambient_color: tuple[float, float, float]
+    fog_color: tuple[float, float, float]
+    fog_density: float
+    background_color: tuple[float, float, float]
+    light_color: tuple[float, float, float]
+    specular_color: tuple[float, float, float]
+    shininess: float
+
+
+WIND_LEVELS: tuple[tuple[str, float], ...] = (
+    ("calma", 0.000),
+    ("brisa", 0.040),
+    ("moderado", 0.085),
+    ("fuerte", 0.145),
+    ("tormenta", 0.220),
+)
+
+
+FLUID_MEDIA: tuple[FluidMedium, ...] = (
+    FluidMedium(
+        name="aire",
+        flow_name="viento",
+        damping_multiplier=1.0,
+        inertia_multiplier=1.0,
+        flow_multiplier=1.0,
+        pulse_multiplier=1.0,
+        surface_motion_multiplier=1.0,
+        ambient_color=(0.16, 0.20, 0.17),
+        fog_color=(0.009, 0.014, 0.012),
+        fog_density=0.010,
+        background_color=(0.009, 0.014, 0.012),
+        light_color=(1.00, 0.96, 0.84),
+        specular_color=(0.72, 0.82, 0.48),
+        shininess=38.0,
+    ),
+    FluidMedium(
+        name="agua",
+        flow_name="corriente",
+        damping_multiplier=3.4,
+        inertia_multiplier=1.65,
+        flow_multiplier=1.32,
+        pulse_multiplier=0.72,
+        surface_motion_multiplier=0.72,
+        ambient_color=(0.08, 0.22, 0.25),
+        fog_color=(0.018, 0.115, 0.145),
+        fog_density=0.105,
+        background_color=(0.010, 0.070, 0.095),
+        light_color=(0.68, 0.90, 0.88),
+        specular_color=(0.58, 0.90, 0.86),
+        shininess=52.0,
+    ),
+    FluidMedium(
+        name="aceite",
+        flow_name="corriente",
+        damping_multiplier=7.5,
+        inertia_multiplier=2.15,
+        flow_multiplier=1.12,
+        pulse_multiplier=0.42,
+        surface_motion_multiplier=0.38,
+        ambient_color=(0.22, 0.16, 0.055),
+        fog_color=(0.115, 0.075, 0.018),
+        fog_density=0.175,
+        background_color=(0.050, 0.032, 0.008),
+        light_color=(1.00, 0.78, 0.38),
+        specular_color=(1.00, 0.73, 0.25),
+        shininess=70.0,
+    ),
+)
 
 
 class DragonSurface:
@@ -200,6 +252,22 @@ class DragonSurface:
 
         return positions, tangent_x, tangent_y, normal
 
+    def height_at(
+        self,
+        x: np.ndarray,
+        y: np.ndarray,
+        time_seconds: float,
+    ) -> np.ndarray:
+        """Altura de la superficie, usada también para detectar clics."""
+
+        p = self.params
+        phase = p.wave_frequency * y + p.wave_speed * time_seconds
+        return (
+            p.transverse_curvature
+            * np.cos(p.transverse_frequency * x)
+            + p.wave_amplitude * np.sin(phase)
+        )
+
     def vertex_data(self, time_seconds: float) -> np.ndarray:
         positions, _, _, normals = self.evaluate(
             self.grid_x,
@@ -209,9 +277,7 @@ class DragonSurface:
         return np.concatenate((positions, normals), axis=1).astype(np.float32)
 
 
-# ---------------------------------------------------------------------------
 # Sistema de resortes angulares
-# ---------------------------------------------------------------------------
 
 class AngularScaleSystem:
     def __init__(
@@ -223,7 +289,7 @@ class AngularScaleSystem:
         neighbor_stiffness: float = 0.12,
         damping: float = 0.12,
         min_angle: float = math.radians(-4.0),
-        max_angle: float = math.radians(68.0),
+        max_angle: float = math.radians(76.0),
     ) -> None:
         rest_angles = np.asarray(rest_angles, dtype=np.float32)
 
@@ -245,10 +311,19 @@ class AngularScaleSystem:
         self.angular_velocities.fill(0.0)
 
     def torque(self, external_torque: np.ndarray) -> np.ndarray:
+        return self.torque_with_medium(external_torque, 1.0)
+
+    def torque_with_medium(
+        self,
+        external_torque: np.ndarray,
+        damping_multiplier: float,
+    ) -> np.ndarray:
         result = (
             np.asarray(external_torque, dtype=np.float32)
             - self.root_stiffness * (self.angles - self.rest_angles)
-            - self.damping * self.angular_velocities
+            - self.damping
+            * float(damping_multiplier)
+            * self.angular_velocities
         )
 
         if self.edges.size:
@@ -268,6 +343,8 @@ class AngularScaleSystem:
         external_torque: np.ndarray,
         dt: float,
         substeps: int = 6,
+        damping_multiplier: float = 1.0,
+        inertia_multiplier: float = 1.0,
     ) -> None:
         if dt <= 0.0:
             return
@@ -275,7 +352,10 @@ class AngularScaleSystem:
         h = min(dt, 1.0 / 30.0) / max(substeps, 1)
 
         for _ in range(substeps):
-            acceleration = self.torque(external_torque) / self.inertia
+            acceleration = self.torque_with_medium(
+                external_torque,
+                damping_multiplier,
+            ) / (self.inertia * float(inertia_multiplier))
 
             # Euler semimplícito: más estable que Euler explícito.
             self.angular_velocities += h * acceleration
@@ -299,9 +379,8 @@ class AngularScaleSystem:
             ] = 0.0
 
 
-# ---------------------------------------------------------------------------
 # Distribución de escamas y geometría de una escama
-# ---------------------------------------------------------------------------
+
 
 def build_scale_layout(
     rows: int,
@@ -392,10 +471,7 @@ def build_scale_mesh() -> np.ndarray:
 
     return np.vstack(vertices).astype(np.float32)
 
-
-# ---------------------------------------------------------------------------
 # Cámara orbital
-# ---------------------------------------------------------------------------
 
 class OrbitCamera:
     def __init__(self) -> None:
@@ -439,9 +515,7 @@ class OrbitCamera:
         self.distance = float(np.clip(self.distance, 5.0, 24.0))
 
 
-# ---------------------------------------------------------------------------
 # Aplicación ModernGL
-# ---------------------------------------------------------------------------
 
 SURFACE_VERTEX_SHADER = """
 #version 330
@@ -470,17 +544,49 @@ in vec3 v_normal;
 
 uniform vec3 u_camera_position;
 uniform vec3 u_light_direction;
+uniform vec3 u_light_color;
+uniform vec3 u_ambient_color;
+uniform vec3 u_fog_color;
+uniform float u_fog_density;
+uniform vec3 u_specular_color;
+uniform float u_shininess;
 
 out vec4 fragment_color;
 
+vec3 phong_lighting(
+    vec3 base_color,
+    vec3 normal,
+    vec3 world_position,
+    float ambient_coefficient,
+    float diffuse_coefficient,
+    float specular_coefficient
+) {
+    vec3 light_direction = normalize(-u_light_direction);
+    vec3 view_direction = normalize(u_camera_position - world_position);
+
+    float diffuse_factor = max(dot(normal, light_direction), 0.0);
+    float specular_factor = 0.0;
+
+    if (diffuse_factor > 0.0) {
+        vec3 reflected_light = reflect(-light_direction, normal);
+        specular_factor = pow(
+            max(dot(view_direction, reflected_light), 0.0),
+            u_shininess
+        );
+    }
+
+    vec3 ambient = ambient_coefficient * u_ambient_color * base_color;
+    vec3 diffuse =
+        diffuse_coefficient * diffuse_factor * u_light_color * base_color;
+    vec3 specular =
+        specular_coefficient * specular_factor
+        * u_light_color * u_specular_color;
+
+    return ambient + diffuse + specular;
+}
+
 void main() {
     vec3 normal = normalize(v_normal);
-    vec3 light = normalize(-u_light_direction);
-    vec3 view_direction = normalize(u_camera_position - v_world_position);
-    vec3 half_direction = normalize(light + view_direction);
-
-    float diffuse = max(dot(normal, light), 0.0);
-    float specular = pow(max(dot(normal, half_direction), 0.0), 24.0);
 
     vec3 base_color = mix(
         vec3(0.025, 0.070, 0.045),
@@ -488,10 +594,25 @@ void main() {
         0.5 + 0.5 * normal.z
     );
 
-    vec3 color =
-        base_color * (0.23 + 0.77 * diffuse)
-        + vec3(0.13, 0.22, 0.14) * specular;
+    vec3 color = phong_lighting(
+        base_color,
+        normal,
+        v_world_position,
+        1.0,
+        0.82,
+        0.22
+    );
 
+    float distance_to_camera = length(
+        u_camera_position - v_world_position
+    );
+    float fog_factor = exp(
+        -pow(u_fog_density * distance_to_camera, 2.0)
+    );
+    color = mix(u_fog_color, color, clamp(fog_factor, 0.0, 1.0));
+
+    // Conversión lineal -> sRGB aproximada para evitar sombras aplastadas.
+    color = pow(max(color, vec3(0.0)), vec3(1.0 / 2.2));
     fragment_color = vec4(color, 1.0);
 }
 """
@@ -526,7 +647,10 @@ void main() {
     vec4 world_position = model * vec4(in_position, 1.0);
 
     v_world_position = world_position.xyz;
-    v_normal = normalize(mat3(model) * in_normal);
+    // La inversa-transpuesta es necesaria porque cada escama usa escalado
+    // no uniforme. Sin ella, la dirección de los brillos queda deformada.
+    mat3 normal_matrix = transpose(inverse(mat3(model)));
+    v_normal = normalize(normal_matrix * in_normal);
     v_variant = i_variant;
 
     gl_Position = u_view_projection * world_position;
@@ -543,8 +667,46 @@ in float v_variant;
 
 uniform vec3 u_camera_position;
 uniform vec3 u_light_direction;
+uniform vec3 u_light_color;
+uniform vec3 u_ambient_color;
+uniform vec3 u_fog_color;
+uniform float u_fog_density;
+uniform vec3 u_specular_color;
+uniform float u_shininess;
 
 out vec4 fragment_color;
+
+vec3 phong_lighting(
+    vec3 base_color,
+    vec3 normal,
+    vec3 world_position,
+    float ambient_coefficient,
+    float diffuse_coefficient,
+    float specular_coefficient
+) {
+    vec3 light_direction = normalize(-u_light_direction);
+    vec3 view_direction = normalize(u_camera_position - world_position);
+
+    float diffuse_factor = max(dot(normal, light_direction), 0.0);
+    float specular_factor = 0.0;
+
+    if (diffuse_factor > 0.0) {
+        vec3 reflected_light = reflect(-light_direction, normal);
+        specular_factor = pow(
+            max(dot(view_direction, reflected_light), 0.0),
+            u_shininess
+        );
+    }
+
+    vec3 ambient = ambient_coefficient * u_ambient_color * base_color;
+    vec3 diffuse =
+        diffuse_coefficient * diffuse_factor * u_light_color * base_color;
+    vec3 specular =
+        specular_coefficient * specular_factor
+        * u_light_color * u_specular_color;
+
+    return ambient + diffuse + specular;
+}
 
 void main() {
     vec3 normal = normalize(v_normal);
@@ -553,32 +715,41 @@ void main() {
         normal = -normal;
     }
 
-    vec3 light = normalize(-u_light_direction);
     vec3 view_direction = normalize(u_camera_position - v_world_position);
-    vec3 half_direction = normalize(light + view_direction);
-
-    float diffuse = max(dot(normal, light), 0.0);
     float rim = pow(
         1.0 - max(dot(normal, view_direction), 0.0),
         2.4
     );
-    float specular = pow(max(dot(normal, half_direction), 0.0), 38.0);
 
     vec3 dark_scale = vec3(0.055, 0.155, 0.075);
     vec3 bright_scale = vec3(0.28, 0.62, 0.20);
     vec3 base_color = mix(dark_scale, bright_scale, v_variant);
 
-    vec3 color =
-        base_color * (0.22 + 0.78 * diffuse)
-        + vec3(0.13, 0.30, 0.09) * rim
-        + vec3(0.72, 0.82, 0.48) * specular * 0.45;
+    vec3 color = phong_lighting(
+        base_color,
+        normal,
+        v_world_position,
+        1.0,
+        0.92,
+        0.58
+    );
+    color += base_color * vec3(0.12, 0.24, 0.08) * rim;
 
+    float distance_to_camera = length(
+        u_camera_position - v_world_position
+    );
+    float fog_factor = exp(
+        -pow(u_fog_density * distance_to_camera, 2.0)
+    );
+    color = mix(u_fog_color, color, clamp(fog_factor, 0.0, 1.0));
+
+    color = pow(max(color, vec3(0.0)), vec3(1.0 / 2.2));
     fragment_color = vec4(color, 1.0);
 }
 """
 
 
-class DragonScaleDemo:
+class EscamasDragon:
     def __init__(self) -> None:
         self.window = self._create_window()
         self.window.switch_to()
@@ -601,7 +772,10 @@ class DragonScaleDemo:
 
         self.time_seconds = 0.0
         self.paused = False
-        self.wind_strength = 0.075
+        self.wind_level = 2
+        self.medium_index = 0
+        self.mouse_press_position: tuple[float, float] | None = None
+        self.mouse_drag_distance = 0.0
 
         self.pulse_age: float | None = 0.0
         self.pulse_center = np.asarray((0.0, -0.4), dtype=np.float32)
@@ -777,6 +951,18 @@ class DragonScaleDemo:
             self.ctx.viewport = (0, 0, max(width, 1), max(height, 1))
 
         @self.window.event
+        def on_mouse_press(
+            x: int,
+            y: int,
+            button: int,
+            modifiers: int,
+        ) -> None:
+            del modifiers
+            if button == mouse.LEFT:
+                self.mouse_press_position = (float(x), float(y))
+                self.mouse_drag_distance = 0.0
+
+        @self.window.event
         def on_mouse_drag(
             x: int,
             y: int,
@@ -787,7 +973,27 @@ class DragonScaleDemo:
         ) -> None:
             del x, y, modifiers
             if buttons & mouse.LEFT:
+                self.mouse_drag_distance += math.hypot(dx, dy)
                 self.camera.orbit(dx, dy)
+
+        @self.window.event
+        def on_mouse_release(
+            x: int,
+            y: int,
+            button: int,
+            modifiers: int,
+        ) -> None:
+            del x, y, modifiers
+
+            if button != mouse.LEFT:
+                return
+
+            press_position = self.mouse_press_position
+            self.mouse_press_position = None
+
+            # Separa un clic intencional de un arrastre de cámara.
+            if press_position is not None and self.mouse_drag_distance <= 5.0:
+                self.trigger_pulse_from_screen(*press_position)
 
         @self.window.event
         def on_mouse_scroll(
@@ -810,12 +1016,22 @@ class DragonScaleDemo:
                 self.trigger_pulse()
 
             elif symbol == key.UP:
-                self.wind_strength = min(self.wind_strength + 0.015, 0.22)
-                self._update_caption()
+                self._change_wind_level(1)
 
             elif symbol == key.DOWN:
-                self.wind_strength = max(self.wind_strength - 0.015, 0.0)
-                self._update_caption()
+                self._change_wind_level(-1)
+
+            elif symbol == key.M:
+                self._set_medium((self.medium_index + 1) % len(FLUID_MEDIA))
+
+            elif symbol == key._1:
+                self._set_medium(0)
+
+            elif symbol == key._2:
+                self._set_medium(1)
+
+            elif symbol == key._3:
+                self._set_medium(2)
 
             elif symbol == key.P:
                 self.paused = not self.paused
@@ -826,17 +1042,181 @@ class DragonScaleDemo:
                 self.pulse_age = None
                 self._update_instance_buffer()
 
-    def trigger_pulse(self) -> None:
-        # Centro ligeramente distinto en cada activación.
-        phase = 0.65 * self.time_seconds
-        self.pulse_center = np.asarray(
-            (
-                1.4 * math.sin(phase),
-                0.9 * math.cos(phase * 0.8),
-            ),
-            dtype=np.float32,
+    @property
+    def medium(self) -> FluidMedium:
+        return FLUID_MEDIA[self.medium_index]
+
+    @property
+    def wind_strength(self) -> float:
+        return WIND_LEVELS[self.wind_level][1]
+
+    def _change_wind_level(self, direction: int) -> None:
+        self.wind_level = int(
+            np.clip(
+                self.wind_level + direction,
+                0,
+                len(WIND_LEVELS) - 1,
+            )
         )
+        self._update_caption()
+
+    def _set_medium(self, index: int) -> None:
+        self.medium_index = int(np.clip(index, 0, len(FLUID_MEDIA) - 1))
+        surface_time = (
+            self.time_seconds * self.medium.surface_motion_multiplier
+        )
+        self.surface_vbo.write(self.surface.vertex_data(surface_time).tobytes())
+        self._update_instance_buffer()
+        self._update_caption()
+
+    def trigger_pulse(
+        self,
+        center: np.ndarray | None = None,
+    ) -> None:
+        if center is None:
+            # El teclado conserva una onda automática para demostración.
+            phase = 0.65 * self.time_seconds
+            center = np.asarray(
+                (
+                    1.4 * math.sin(phase),
+                    0.9 * math.cos(phase * 0.8),
+                ),
+                dtype=np.float32,
+            )
+
+        self.pulse_center = np.asarray(center[:2], dtype=np.float32)
         self.pulse_age = 0.0
+
+    def trigger_pulse_from_screen(
+        self,
+        screen_x: float,
+        screen_y: float,
+    ) -> None:
+        """Proyecta el clic a la superficie curva y crea allí la onda."""
+
+        hit = self._screen_to_surface(screen_x, screen_y)
+        if hit is not None:
+            self.trigger_pulse(hit[:2])
+
+    def _screen_to_surface(
+        self,
+        screen_x: float,
+        screen_y: float,
+    ) -> np.ndarray | None:
+        """Intersección rayo-superficie para una malla definida como z=f(x,y)."""
+
+        width = max(self.window.width, 1)
+        height = max(self.window.height, 1)
+        ndc_x = 2.0 * screen_x / width - 1.0
+        ndc_y = 2.0 * screen_y / height - 1.0
+
+        view_projection, _ = self._view_projection()
+        inverse_view_projection = np.linalg.inv(view_projection)
+
+        def unproject(ndc_z: float) -> np.ndarray:
+            clip = np.asarray(
+                (ndc_x, ndc_y, ndc_z, 1.0),
+                dtype=np.float32,
+            )
+            world = inverse_view_projection @ clip
+            return (world[:3] / world[3]).astype(np.float32)
+
+        ray_origin = unproject(-1.0)
+        ray_direction = normalize(unproject(1.0) - ray_origin)
+
+        # Limita el recorrido al rectángulo (x, y) ocupado por la piel.
+        params = self.surface.params
+        bounds = (
+            (-0.5 * params.width, 0.5 * params.width),
+            (-0.5 * params.length, 0.5 * params.length),
+        )
+        t_start = 0.0
+        t_end = 80.0
+
+        for axis, (minimum, maximum) in enumerate(bounds):
+            component = float(ray_direction[axis])
+            origin = float(ray_origin[axis])
+
+            if abs(component) < 1.0e-8:
+                if origin < minimum or origin > maximum:
+                    return None
+                continue
+
+            first = (minimum - origin) / component
+            second = (maximum - origin) / component
+            near_axis, far_axis = sorted((first, second))
+            t_start = max(t_start, near_axis)
+            t_end = min(t_end, far_axis)
+
+            if t_start > t_end:
+                return None
+
+        surface_time = (
+            self.time_seconds * self.medium.surface_motion_multiplier
+        )
+        sample_times = np.linspace(t_start, t_end, 96, dtype=np.float32)
+        points = (
+            ray_origin[np.newaxis, :]
+            + sample_times[:, np.newaxis] * ray_direction[np.newaxis, :]
+        )
+        heights = self.surface.height_at(
+            points[:, 0],
+            points[:, 1],
+            surface_time,
+        )
+        differences = points[:, 2] - heights
+
+        crossings = np.flatnonzero(differences[:-1] * differences[1:] <= 0.0)
+        if crossings.size == 0:
+            return None
+
+        low = float(sample_times[int(crossings[0])])
+        high = float(sample_times[int(crossings[0]) + 1])
+
+        # Bisección para que la onda nazca visualmente bajo el cursor.
+        for _ in range(18):
+            middle = 0.5 * (low + high)
+            point = ray_origin + middle * ray_direction
+            surface_z = float(
+                self.surface.height_at(
+                    np.asarray(point[0]),
+                    np.asarray(point[1]),
+                    surface_time,
+                )
+            )
+
+            low_point = ray_origin + low * ray_direction
+            low_surface_z = float(
+                self.surface.height_at(
+                    np.asarray(low_point[0]),
+                    np.asarray(low_point[1]),
+                    surface_time,
+                )
+            )
+            low_difference = float(low_point[2]) - low_surface_z
+            middle_difference = float(point[2]) - surface_z
+
+            if low_difference * middle_difference <= 0.0:
+                high = middle
+            else:
+                low = middle
+
+        hit = ray_origin + 0.5 * (low + high) * ray_direction
+        hit[2] = float(
+            self.surface.height_at(
+                np.asarray(hit[0]),
+                np.asarray(hit[1]),
+                surface_time,
+            )
+        )
+        return hit.astype(np.float32)
+
+    def _storm_chaos(self) -> float:
+        """Activa progresivamente la turbulencia en fuerte y tormenta."""
+
+        intensity = self.wind_level / max(len(WIND_LEVELS) - 1, 1)
+        onset = max((intensity - 0.5) / 0.5, 0.0)
+        return onset * onset
 
     def _external_torque(self) -> np.ndarray:
         x = self.anchor_uv[:, 0]
@@ -848,12 +1228,45 @@ class DragonScaleDemo:
             + 0.18 * np.sin(2.4 * x - 1.15 * self.time_seconds)
         )
 
-        wind = self.wind_strength * wind_pattern
+        chaos = self._storm_chaos()
+        gusts = (
+            0.58
+            + 0.28 * math.sin(0.83 * self.time_seconds)
+            + 0.14 * math.sin(2.17 * self.time_seconds + 1.3)
+        )
+        turbulence = (
+            0.62
+            * np.sin(
+                5.2 * x
+                - 5.7 * self.time_seconds
+                + 1.8 * self.scale_phase
+            )
+            * np.sin(4.1 * y + 3.8 * self.time_seconds)
+            + 0.38
+            * np.sin(
+                8.5 * x
+                - 6.3 * y
+                + 8.4 * self.time_seconds
+                + self.scale_phase
+            )
+        )
+        wind_pattern += chaos * (0.95 * gusts + 0.72 * turbulence)
 
-        body_inertia = 0.018 * np.sin(
-            1.20 * self.time_seconds
-            + 0.72 * y
-            + 0.35 * self.scale_phase
+        wind = (
+            self.wind_strength
+            * self.medium.flow_multiplier
+            * wind_pattern
+        )
+
+        body_inertia = (
+            0.018
+            * (1.0 + 1.7 * chaos)
+            / self.medium.inertia_multiplier
+            * np.sin(
+                1.20 * self.time_seconds
+                + 0.72 * y
+                + 0.35 * self.scale_phase
+            )
         )
 
         torque = (wind + body_inertia).astype(np.float32)
@@ -871,7 +1284,12 @@ class DragonScaleDemo:
                 -((distance - radius) ** 2) / (2.0 * width * width)
             )
 
-            torque += (0.47 * envelope * ring).astype(np.float32)
+            torque += (
+                0.47
+                * self.medium.pulse_multiplier
+                * envelope
+                * ring
+            ).astype(np.float32)
 
             if self.pulse_age > 5.0:
                 self.pulse_age = None
@@ -885,7 +1303,7 @@ class DragonScaleDemo:
         positions, tangent_x, tangent_y, normal = self.surface.evaluate(
             x,
             y,
-            self.time_seconds,
+            self.time_seconds * self.medium.surface_motion_multiplier,
         )
 
         # Evita z-fighting entre la piel y la raíz de la escama.
@@ -958,9 +1376,16 @@ class DragonScaleDemo:
             external_torque=self._external_torque(),
             dt=dt,
             substeps=6,
+            damping_multiplier=(
+                self.medium.damping_multiplier
+                * (1.0 - 0.28 * self._storm_chaos())
+            ),
+            inertia_multiplier=self.medium.inertia_multiplier,
         )
 
-        surface_data = self.surface.vertex_data(self.time_seconds)
+        surface_data = self.surface.vertex_data(
+            self.time_seconds * self.medium.surface_motion_multiplier
+        )
         self.surface_vbo.write(surface_data.tobytes())
         self._update_instance_buffer()
 
@@ -987,33 +1412,30 @@ class DragonScaleDemo:
             max(self.window.width, 1),
             max(self.window.height, 1),
         )
-        self.ctx.clear(0.009, 0.014, 0.012, 1.0, depth=1.0)
+        background = self.medium.background_color
+        self.ctx.clear(*background, 1.0, depth=1.0)
 
         view_projection, camera_position = self._view_projection()
         light_direction = normalize(
             np.asarray((-0.6, -0.9, -1.7), dtype=np.float32)
         )
 
-        self.surface_program["u_mvp"].write(
-            matrix_bytes(view_projection)
+        self._set_lighting_uniforms(
+            self.surface_program,
+            camera_position,
+            light_direction,
         )
-        self.surface_program["u_camera_position"].value = tuple(
-            float(value) for value in camera_position
-        )
-        self.surface_program["u_light_direction"].value = tuple(
-            float(value) for value in light_direction
-        )
+        self.surface_program["u_mvp"].write(matrix_bytes(view_projection))
 
         self.surface_vao.render(mode=moderngl.TRIANGLES)
 
         self.scale_program["u_view_projection"].write(
             matrix_bytes(view_projection)
         )
-        self.scale_program["u_camera_position"].value = tuple(
-            float(value) for value in camera_position
-        )
-        self.scale_program["u_light_direction"].value = tuple(
-            float(value) for value in light_direction
+        self._set_lighting_uniforms(
+            self.scale_program,
+            camera_position,
+            light_direction,
         )
 
         self.scale_vao.render(
@@ -1021,16 +1443,41 @@ class DragonScaleDemo:
             instances=self.scale_count,
         )
 
+    def _set_lighting_uniforms(
+        self,
+        program: moderngl.Program,
+        camera_position: np.ndarray,
+        light_direction: np.ndarray,
+    ) -> None:
+        """Carga el mismo modelo Phong y los parámetros del medio."""
+
+        vector_uniforms = {
+            "u_camera_position": camera_position,
+            "u_light_direction": light_direction,
+            "u_light_color": self.medium.light_color,
+            "u_ambient_color": self.medium.ambient_color,
+            "u_fog_color": self.medium.fog_color,
+            "u_specular_color": self.medium.specular_color,
+        }
+
+        for name, values in vector_uniforms.items():
+            program[name].value = tuple(float(value) for value in values)
+
+        program["u_fog_density"].value = self.medium.fog_density
+        program["u_shininess"].value = self.medium.shininess
+
     def _update_caption(self) -> None:
         state = "pausado" if self.paused else "activo"
-        wind_percent = 100.0 * self.wind_strength / 0.22
+        wind_name = WIND_LEVELS[self.wind_level][0]
 
         self.window.set_caption(
             "Escamas de dragón | "
             f"{self.scale_count} escamas | "
-            f"viento {wind_percent:4.0f}% | "
+            f"medio: {self.medium.name} | "
+            f"{self.medium.flow_name}: {wind_name} "
+            f"({self.wind_level}/{len(WIND_LEVELS) - 1}) | "
             f"{state} | "
-            "ESPACIO: onda  ↑↓: viento  P: pausa  R: reiniciar"
+            "CLIC: onda  M/1-3: medio  ↑↓: flujo  P: pausa  R: reiniciar"
         )
 
     def run(self) -> None:
@@ -1039,7 +1486,7 @@ class DragonScaleDemo:
 
 
 def main() -> None:
-    app = DragonScaleDemo()
+    app = EscamasDragon()
     app.run()
 
 
