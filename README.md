@@ -120,39 +120,6 @@ modelos de iluminación y fuerzas externas.
 
 ---
 
-## Instalación de dependencias
-
-Se recomienda utilizar un entorno virtual antes de instalar las bibliotecas:
-
-```bash
-python -m venv .venv
-```
-
-Activa el entorno virtual:
-
-<details>
-<summary><strong>Windows — PowerShell</strong></summary>
-
-```powershell
-.\.venv\Scripts\Activate.ps1
-```
-
-</details>
-
-<details>
-<summary><strong>Linux o macOS</strong></summary>
-
-```bash
-source .venv/bin/activate
-```
-
-</details>
-
-Instala las dependencias compartidas por las simulaciones:
-
-```bash
-python -m pip install "numpy>=1.26" "scipy>=1.12" "pyglet>=2.1" "moderngl>=5.10" "pillow>=10.0"
-```
 
 ## Alcance de los modelos
 
