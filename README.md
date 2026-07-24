@@ -1,57 +1,178 @@
-#*Cells'war:*          
-##
-Basicamente cellswar es una simulacion(semi-realista) sobre las interacciones entre celulas normales, celulas blancas y celulas cancerigenas.Aqui se encuentran 2 ejemplos distintos con enfoque distintos, Cells2D y Cells3D, que se plantean de la misma manera pero con enfoques y herramientas distintas.
+<div align="center">
 
-Requerimientos:
+<h1>Cells'War y Malla de Escamas de Dragón</h1>
 
+<h3>Simulaciones gráficas de sistemas celulares y superficies deformables</h3>
+
+![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![Pyglet](https://img.shields.io/badge/Pyglet-2.1%2B-74B900?style=for-the-badge)
+![ModernGL](https://img.shields.io/badge/ModernGL-5.10%2B-2D2D2D?style=for-the-badge)
+![OpenGL](https://img.shields.io/badge/OpenGL-3.3%2B-5586A4?style=for-the-badge&logo=opengl&logoColor=white)
+
+<p>
+  Dos propuestas de simulación desarrolladas en Python: un modelo de
+  interacción celular y una superficie dinámica inspirada en escamas de dragón.
+</p>
+
+</div>
+
+---
+
+## Contenido
+
+- [Descripción general](#descripción-general)
+- [Cells'War](#cellswar)
+- [Malla de escamas de dragón](#malla-de-escamas-de-dragón)
+- [Instalación de dependencias](#instalación-de-dependencias)
+- [Alcance de los modelos](#alcance-de-los-modelos)
+
+## Descripción general
+
+| Simulación | Objetivo principal | Tecnologías destacadas |
+| --- | --- | --- |
+| **Cells'War** | Representar la interacción entre células normales, células blancas y células cancerígenas. | NumPy, SciPy, Pyglet, ModernGL y KD-Tree |
+| **Malla de escamas de dragón** | Explorar superficies deformables, dinámica lagrangiana e iluminación en tiempo real. | NumPy, Pyglet, ModernGL y OpenGL 3.3+ |
+
+> [!NOTE]
+> Ambos proyectos son modelos visuales simplificados. Su propósito es explorar
+> técnicas de simulación y computación gráfica, no reproducir con exactitud un
+> sistema biológico o físico real.
+
+---
+
+## Cells'War
+
+**Cells'War** es una simulación semi-realista de las interacciones entre tres
+poblaciones celulares:
+
+- células normales;
+- células blancas;
+- células cancerígenas.
+
+El proyecto incluye dos variantes, **Cells2D** y **Cells3D**. Ambas comparten el
+mismo planteamiento general, pero emplean herramientas y enfoques de
+representación diferentes.
+
+### Características principales
+
+- Visualización de la distribución espacial mediante un **mapa de calor**.
+- Uso de un **KD-Tree** para acelerar las consultas de proximidad.
+- Modificación de las poblaciones celulares en tiempo real.
+- Posibilidad de probar diferentes cantidades iniciales de cada tipo de célula.
+- Propagación del cáncer mediante un crecimiento acumulativo: una célula
+  infectada muta y puede infectar nuevos objetivos.
+
+### Consideraciones técnicas
+
+1. El espacio de simulación es intencionalmente acotado para favorecer las
+   consultas espaciales y el comportamiento del KD-Tree.
+2. El modelo de infección no incorpora regeneración ni decaimiento de la
+   población cancerígena.
+3. Cada población celular se representa mediante una versión generalizada de
+   su comportamiento.
+4. El modelo prioriza la experimentación visual y computacional por sobre la
+   precisión biomédica.
+
+### Requisitos
+
+```text
 numpy>=1.26
-
 scipy>=1.12
-
 pyglet>=2.1
-
 moderngl>=5.10
-
 pillow>=10.0
+```
 
-Detalles importantes:
+---
 
-I) La grilla permite una visualizacion estilo warm-map, que permite caracterizar mejor la presencia de las poblaciones en el espacio.
+## Malla de escamas de dragón
 
-II) El espacio en general es reducido con respecto a las dimensiones, pues resulta relevante para el KD-Tree.
+Esta simulación representa una superficie deformable inspirada en una malla de
+escamas. Su objetivo principal es experimentar con dinámica lagrangiana,
+modelos de iluminación y fuerzas externas.
 
-III) En general el comportamiento del cancer respecto a la infeccion que provocan es de tipo exponencial, pues al infectar un objetivo este muta y se permite infectar a otras sin capacidad de regeneracion. De forma que es un crecimiento periodico sin decaimiento. 
+### Características principales
 
-IV) Ademas, se pueden modificar las poblaciones en tiempo real, tal que se pueden probar distintos volumenes de cada tipo.
+- Superficie compuesta por **52 × 46 vértices**.
+- Simulación de resistencia al viento.
+- Inclusión de efectos viscosos.
+- Animación de la superficie en tiempo real.
+- Cámara y sistema angular controlables durante la ejecución.
+- Renderizado mediante **ModernGL** y **OpenGL 3.3 o superior**.
 
-V) El modelo solo considera versiones ambiguas de cada tipo de celula.
+### Controles
 
+| Tecla | Acción |
+| :---: | --- |
+| `R` | Reinicia únicamente el sistema angular. |
 
+> [!IMPORTANT]
+> La tecla `R` no reinicia el tiempo de simulación, el viento, la cámara ni la
+> animación de la superficie.
 
+### Requisitos
 
-###Malla escamas de dragon:
+- Python 3.10 o superior.
+- NumPy.
+- Pyglet.
+- ModernGL.
+- Controladores gráficos compatibles con OpenGL 3.3 o superior.
 
-Requerimientos:
+---
 
-Python 3.10 o superior.
+## Instalación de dependencias
 
-NumPy.
+Se recomienda utilizar un entorno virtual antes de instalar las bibliotecas:
 
-Pyglet.
+```bash
+python -m venv .venv
+```
 
-ModernGL.
+Activa el entorno virtual:
 
-Controladores gráficos compatibles con OpenGL 3.3 o superior.
+<details>
+<summary><strong>Windows — PowerShell</strong></summary>
 
-Detalles importantes:
+```powershell
+.\.venv\Scripts\Activate.ps1
+```
 
-I) Es un modelo para probar principalmente algunos detalles sobre el paradigma lagrangiano y modelos de iluminacion.
+</details>
 
-II) Permite probar distintos efectos como la resistencia al viento y algunos elementos viscosos.
+<details>
+<summary><strong>Linux o macOS</strong></summary>
 
-III)La superficie contiene 52 × 46 vértices.
+```bash
+source .venv/bin/activate
+```
 
-IV)La tecla R solo reinicia el sistema angular, no reinicia el tiempo, el viento, la cámara ni la animación de la superficie.
+</details>
 
+Instala las dependencias compartidas por las simulaciones:
 
+```bash
+python -m pip install "numpy>=1.26" "scipy>=1.12" "pyglet>=2.1" "moderngl>=5.10" "pillow>=10.0"
+```
 
+## Alcance de los modelos
+
+Estas simulaciones permiten estudiar y visualizar:
+
+- interacciones locales entre agentes;
+- estructuras de búsqueda espacial;
+- crecimiento y propagación de poblaciones;
+- deformación de superficies;
+- respuesta ante fuerzas externas;
+- iluminación y renderizado en tiempo real.
+
+Los resultados deben interpretarse como aproximaciones computacionales con
+fines educativos y experimentales.
+
+---
+
+<div align="center">
+
+Desarrollado como una exploración de **simulación**, **física** y
+**computación gráfica**.
+
+</div>
