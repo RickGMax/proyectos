@@ -24,27 +24,24 @@ III) En general el comportamiento del cancer respecto a la infeccion que provoca
 
 IV) Ademas, se pueden modificar las poblaciones en tiempo real, tal que se pueden probar distintos volumenes de cada tipo.
 
-Fallas evidentes: 
-
-I) no considera los distintos tipos de celulas blancas 
-
-II) no distingue entre colonias de cancer, y es un tanto ambiguo en el comportamiento, dado que no representa ninguno en particular 
-
-III) La implementacion por Boids limita el volumen de la muestra
-
-
-Aciertos relevantes:
-
-I)cumple correctamente con la infeccion exponencial, matematicamente es fiel al modelo tipico 
-
-II) Resulta ser bastante bueno con KD-trees, optimizando bastante la simulacion 
-
-III) Los boids dan una aproximacion realista y biologicamente correcta sobre los comportamientos de las celulas
+V) El modelo solo considera versiones ambiguas de cada tipo de celula.
 
 
 
 
 ###Malla escamas de dragon:
+
+Requerimientos:
+
+Python 3.10 o superior.
+
+NumPy.
+
+Pyglet.
+
+ModernGL.
+
+Controladores gráficos compatibles con OpenGL 3.3 o superior.
 
 Detalles importantes:
 
@@ -52,4 +49,9 @@ I) Es un modelo para probar principalmente algunos detalles sobre el paradigma l
 
 II) Permite probar distintos efectos como la resistencia al viento y algunos elementos viscosos.
 
-III)
+III)La superficie contiene 52 × 46 vértices.
+
+IV)La tecla R solo reinicia el sistema angular, no reinicia el tiempo, el viento, la cámara ni la animación de la superficie.
+
+
+
