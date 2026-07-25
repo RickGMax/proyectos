@@ -1,6 +1,6 @@
 <div align="center">
 
-<h1>Cells'War y Malla de Escamas de Dragón</h1>
+<h1>Cells'War,Malla de Escamas de Dragón y Redes nerviosas</h1>
 
 <h3>Simulaciones gráficas de sistemas celulares y superficies deformables</h3>
 
