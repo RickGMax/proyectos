@@ -23,8 +23,9 @@
 - [Descripción general](#descripción-general)
 - [Cells'War](#cellswar)
 - [Malla de escamas de dragón](#malla-de-escamas-de-dragón)
-- [Alcance de los modelos](#alcance-de-los-modelos)
 - [Redes de impulsos nerviosos](#redes-de-impulsos-nerviosos)
+- [Alcance de los modelos](#alcance-de-los-modelos)
+
 
 ## Descripción general
 
