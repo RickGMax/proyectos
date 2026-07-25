@@ -157,7 +157,7 @@ modelos de iluminación y fuerzas externas.
 ### Requisitos
 
 Pyglet
-
+Numpy 
 
 ---
 
