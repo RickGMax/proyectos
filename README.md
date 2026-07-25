@@ -10,8 +10,8 @@
 ![OpenGL](https://img.shields.io/badge/OpenGL-3.3%2B-5586A4?style=for-the-badge&logo=opengl&logoColor=white)
 
 <p>
-  Dos propuestas de simulación desarrolladas en Python: un modelo de
-  interacción celular y una superficie dinámica inspirada en escamas de dragón.
+  Tres propuestas de simulación desarrolladas en Python: un modelo de
+  interacción celular,una superficie dinámica inspirada en escamas de dragón y una red de impulsos nerviosos.
 </p>
 
 </div>
@@ -24,6 +24,7 @@
 - [Cells'War](#cellswar)
 - [Malla de escamas de dragón](#malla-de-escamas-de-dragón)
 - [Alcance de los modelos](#alcance-de-los-modelos)
+- [Redes de impulsos nerviosos](#redes-de-impulsos-nerviosos)
 
 ## Descripción general
 
@@ -31,9 +32,10 @@
 | --- | --- | --- |
 | **Cells'War** | Representar la interacción entre células normales, células blancas y células cancerígenas. | NumPy, SciPy, Pyglet, ModernGL y KD-Tree |
 | **Malla de escamas de dragón** | Explorar superficies deformables, dinámica lagrangiana e iluminación en tiempo real. | NumPy, Pyglet, ModernGL y OpenGL 3.3+ |
+| **Redes de impulsos nerviosos** | Representar la interacción del tejido nervioso y sus principales mecanismos. | NumPy,Pyglet|
 
 > [!NOTE]
-> Ambos proyectos son modelos visuales simplificados. Su propósito es explorar
+> Los proyectos son modelos visuales simplificados. Su propósito es explorar
 > técnicas de simulación y computación gráfica, no reproducir con exactitud un
 > sistema biológico o físico real.
 
@@ -125,6 +127,37 @@ modelos de iluminación y fuerzas externas.
 - ModernGL.
 - Controladores gráficos compatibles con OpenGL 3.3 o superior.
 
+
+---
+## Redes de impulsos nerviosos
+
+### Características principales
+
+-Utiliza propiedades de grafos, vertices y aristas para modelar una red de neuronas.
+
+-Los vertices representan las neuronas y las aristas las conexiones(que vendrian siendo las conexiones entre dendritas), trae cierta componente grafica para mejorar la visualizacion de los organismos 
+
+-Para evitar loops de propagacion existe un parametro de refraccion que funciona como ventana de tiempo. 
+
+-Utiliza algoritmos como dikjstra para alcanzar la distancia mas corta entre 2 neuronas.
+
+-Utiliza Kruskall para encontrar el arbol de costo minimo.
+
+### Controles
+
+| Tecla | Acción |
+| :---: | --- |
+| `R` | Reinicia la red. |
+| `Click izquierdo` | Inicia un pulso desde una neurona. |
+| `P` | Genera un pulso desde 2 neuronas aleatorias. |
+| `M` | Arbol de costo minimo. |
+| `Espacio` | Genera un pulso en algun punto aleatorio. |
+
+### Requisitos
+
+Pyglet
+
+
 ---
 
 
@@ -138,6 +171,8 @@ Estas simulaciones permiten estudiar y visualizar:
 - deformación de superficies;
 - respuesta ante fuerzas externas;
 - iluminación y renderizado en tiempo real.
+- Estudio del uso de los grafos y sus propiedades
+- Aplicaciones de tecnicas graficas para el desarrollo de aplicaciones relacionadads con la biologia
 
 Los resultados deben interpretarse como aproximaciones computacionales con
 fines educativos y experimentales.
@@ -151,12 +186,8 @@ Desarrollado como una exploración de **simulación**, **física** y
 
 </div>
 
----
-## Redes de impulsos nerviosos
 
-### Características principales
 
--Utiliza propiedades de grafos, vertices y aristas para modelar una red de neuronas.
 
--Los vertices representan las neuronas y las aristas las conexiones(que vendrian siendo las conexiones entre dendritas), trae cierta componente grafica para mejorar la visualizacion de los organismos 
+
 
