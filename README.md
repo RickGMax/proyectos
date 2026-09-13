@@ -22,7 +22,6 @@
 
 - [Descripción general](#descripción-general)
 - [Cells'War](#cellswar)
-- [Malla de escamas de dragón](#malla-de-escamas-de-dragón)
 - [Redes de impulsos nerviosos](#redes-de-impulsos-nerviosos)
 - [Alcance de los modelos](#alcance-de-los-modelos)
 
@@ -32,7 +31,6 @@
 | Simulación | Objetivo principal | Tecnologías destacadas |
 | --- | --- | --- |
 | **Cells'War** | Representar la interacción entre células normales, células blancas y células cancerígenas. | NumPy, SciPy, Pyglet, ModernGL y KD-Tree |
-| **Malla de escamas de dragón** | Explorar superficies deformables, dinámica lagrangiana e iluminación en tiempo real. | NumPy, Pyglet, ModernGL y OpenGL 3.3+ |
 | **Redes de impulsos nerviosos** | Representar la interacción del tejido nervioso y sus principales mecanismos. | NumPy,Pyglet|
 
 > [!NOTE]
@@ -86,48 +84,6 @@ pillow>=10.0
 ```
 
 ---
-
-## Malla de escamas de dragón
-
-Esta simulación representa una superficie deformable inspirada en una malla de
-escamas. Su objetivo principal es experimentar con dinámica lagrangiana,
-modelos de iluminación y fuerzas externas.
-
-### Características principales
-
-- Superficie compuesta por **52 × 46 vértices**.
-- Simulación de resistencia al viento.
-- Inclusión de efectos viscosos.
-- Animación de la superficie en tiempo real.
-- Cámara y sistema angular controlables durante la ejecución.
-- Renderizado mediante **ModernGL** y **OpenGL 3.3 o superior**.
-- Utiliza el modelo de iluminacion de Phong
-- Tiene distintas velocidades para probar el efecto de cada fluido
-
-### Controles
-
-| Tecla | Acción |
-| :---: | --- |
-| `R` | Reinicia únicamente el sistema angular. |
-| `Click izquierdo` | Genera una onda en el espacio clikeado. |
-| `P` | Pausa/Reanuda la simulacion. |
-| `1` | Efecto de viento. |
-| `2` | Efecto de agua. |
-| `3` | Efecto de aceite. |
-| `Flecha arriba y abajo` | arriba aumenta el efecto de la corriente, abajo lo disminuye. |
-
-> [!IMPORTANT]
-> La tecla `R` no reinicia el tiempo de simulación, el viento, la cámara ni la
-> animación de la superficie.
-
-### Requisitos
-
-- Python 3.10 o superior.
-- NumPy.
-- Pyglet.
-- ModernGL.
-- Controladores gráficos compatibles con OpenGL 3.3 o superior.
-
 
 ---
 ## Redes de impulsos nerviosos
