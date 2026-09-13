@@ -40,7 +40,8 @@
 ---
 
 ## Cells'War
-
+![Simulación de células](assets/cellswar2d.JPG)
+![Simulación de células](assets/cellswar3d.JPG)
 **Cells'War** es una simulación semi-realista de las interacciones entre tres
 poblaciones celulares:
 
