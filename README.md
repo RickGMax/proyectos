@@ -87,6 +87,7 @@ pillow>=10.0
 
 ---
 ## Redes de impulsos nerviosos
+![Simulación de células](redcompleja.JPG)
 
 ### Características principales
 
