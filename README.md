@@ -2,7 +2,7 @@
 
 <h1>Proyectos</h1>
 
-<h3>Simulaciones gráficas,bases de datos y proyectos escalables menores</h3>
+<h3>Simulaciones gráficas,bases de datos y proyectos escalables</h3>
 
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![Pyglet](https://img.shields.io/badge/Pyglet-2.1%2B-74B900?style=for-the-badge)
