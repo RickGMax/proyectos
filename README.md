@@ -127,9 +127,6 @@ Estas simulaciones permiten estudiar y visualizar:
 - interacciones locales entre agentes;
 - estructuras de búsqueda espacial;
 - crecimiento y propagación de poblaciones;
-- deformación de superficies;
-- respuesta ante fuerzas externas;
-- iluminación y renderizado en tiempo real.
 - Estudio del uso de los grafos y sus propiedades
 - Aplicaciones de tecnicas graficas para el desarrollo de aplicaciones relacionadads con la biologia
 
