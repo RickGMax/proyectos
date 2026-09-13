@@ -10,8 +10,7 @@
 ![OpenGL](https://img.shields.io/badge/OpenGL-3.3%2B-5586A4?style=for-the-badge&logo=opengl&logoColor=white)
 
 <p>
-  Tres propuestas de simulación desarrolladas en Python: un modelo de
-  interacción celular,una superficie dinámica inspirada en escamas de dragón y una red de impulsos nerviosos.
+  Propuestas variadas de proyectos e ideas para desarrollar con respecto a tematicas de biologia, computacion grafica, teoria de grafos o simplemente pruebas de proyectos escalables.
 </p>
 
 </div>
