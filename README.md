@@ -24,9 +24,9 @@
 - [Descripción general](#descripción-general)
 - [Cells'War](#cellswar)
 - [Redes de impulsos nerviosos](#redes-de-impulsos-nerviosos)
+- [Proyecto de Scala](#poo-sistema-de-turnos-en-scala)
+- [Base de Datos](#Bases-de-datos-biodiversidad-de-chile)
 - [Alcance de los modelos](#alcance-de-los-modelos)
-- [Proyecto de Scala](#buenas-practicas-y-POO)
-- [Base de Datos](#Base-de-datos-biodiversidad)
 
 
 ## Descripción general
