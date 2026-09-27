@@ -124,7 +124,7 @@ pillow>=10.0
 -Numpy 
 
 ---
-###Bases de datos: Biodiversidad de Chile
+##Bases de datos: Biodiversidad de Chile
 
 **Proyecto académico grupal**  
 **Etapa actual:** modelado conceptual y relacional (Hito 1).
@@ -148,7 +148,7 @@ Diseño de una base de datos para organizar información sobre especies presente
 
 ---
 
-###POO· Sistema de turnos en Scala
+##POO:Sistema de turnos en Scala
 
 **Proyecto académico · Scala 3 · MUnit**  
 **Etapa actual:** modelo del juego y programador de turnos.
