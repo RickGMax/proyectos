@@ -24,7 +24,7 @@
 - [Descripción general](#descripción-general)
 - [Cells'War](#cellswar)
 - [Redes de impulsos nerviosos](#redes-de-impulsos-nerviosos)
-- [Base de Datos](#Bases-de-datos-biodiversidad-de-chile)
+- [Base de Datos](#bases-de-datos-biodiversidad-de-chile)
 - [Proyecto de Scala](#poo-sistema-de-turnos-en-scala)
 - [Alcance de los modelos](#alcance-de-los-modelos)
 
@@ -148,7 +148,7 @@ Diseño de una base de datos para organizar información sobre especies presente
 
 ---
 
-## POO:Sistema de turnos en Scala
+## POO: Sistema de turnos en Scala
 
 **Proyecto académico · Scala 3 · MUnit**  
 **Etapa actual:** modelo del juego y programador de turnos.
