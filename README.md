@@ -127,7 +127,6 @@ pillow>=10.0
 ## Bases de datos: Biodiversidad de Chile
 
 **Proyecto académico grupal**  
-**Etapa actual:** modelado conceptual y relacional (Hito 1).
 
 Diseño de una base de datos para organizar información sobre especies presentes en Chile y facilitar la consulta de su taxonomía, distribución regional y estado de conservación.
 
@@ -138,12 +137,12 @@ Diseño de una base de datos para organizar información sobre especies presente
 - Nombres comunes y sinónimos de cada especie.
 - Clasificaciones de conservación actuales e históricas.
 - Modelo entidad-relación, esquema relacional y análisis de FNBC.
+- link de la pagina: https://grupo36.cc3201.dcc.uchile.cl/
 
 **Modelo entidad-relación**
 
 ![Modelo entidad-relación del proyecto de biodiversidad](assets/modelo_entidad_relacion.jpg)
 
-> **Siguiente etapa:** implementar la base de datos y desarrollar una aplicación web pública con búsqueda y filtros.
 
 
 ---
