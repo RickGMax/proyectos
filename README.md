@@ -7,7 +7,6 @@
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![Pyglet](https://img.shields.io/badge/Pyglet-2.1%2B-74B900?style=for-the-badge)
 ![ModernGL](https://img.shields.io/badge/ModernGL-5.10%2B-2D2D2D?style=for-the-badge)
-![OpenGL](https://img.shields.io/badge/OpenGL-3.3%2B-5586A4?style=for-the-badge&logo=opengl&logoColor=white)
 ![Scala](https://img.shields.io/badge/Scala-3.8.2-DC322F?style=for-the-badge&logo=scala&logoColor=white)
 ![SQL](https://img.shields.io/badge/SQL-Database-4479A1?style=for-the-badge&logo=postgresql&logoColor=white)
 
@@ -34,7 +33,7 @@
 | Proyecto | Objetivo principal | Tecnologías y conceptos principales |
 | --- | --- | --- |
 | **Cells'War** | Representar la interacción entre células normales, células blancas y células cancerígenas. | NumPy, SciPy, Pyglet, ModernGL y KD-Tree |
-| **Redes de impulsos nerviosos** | Explorar la propagación de impulsos en una red de neuronas representada como un grafo en 3D. | Python, Pyglet, Dijkstra y Prim |
+| **Redes de impulsos nerviosos** | Explorar la propagación de impulsos en una red de neuronas representada como un grafo en 3D. | Python, ModernGL, Pyglet, Dijkstra y Prim |
 | **Biodiversidad de Chile** | Modelar información sobre especies, regiones y clasificaciones de conservación. | Modelo entidad-relación, modelo relacional y FNBC |
 | **Scala y POO** | Modelar un combate por turnos e integrar sus acciones y el control de turnos. | Scala 3, POO, Visitor, sbt y MUnit |
 
@@ -61,21 +60,21 @@ El proyecto incluye dos variantes, **Cells2D** y **Cells3D**. Ambas comparten el
 mismo planteamiento general, pero emplean herramientas y enfoques de
 representación diferentes.
 
+La geometría de ambas variantes se dibuja con **ModernGL**. La versión 2D agrupa círculos y segmentos en buffers reutilizables; la versión 3D utiliza mallas, texturas y shaders. Pyglet se encarga de la ventana, los controles y el texto del panel.
+
 ### Características principales
 
-- Visualización de la distribución espacial mediante un **mapa de calor**.
+- Visualización de la distribución espacial en 2D mediante una **grilla de densidad** y grilla de referencia en 3D.
 - Uso de un **KD-Tree** para acelerar las consultas de proximidad.
 - Modificación de las poblaciones celulares en tiempo real.
 - Posibilidad de probar diferentes cantidades iniciales de cada tipo de célula.
-- Propagación del cáncer mediante un crecimiento acumulativo: una célula
-  infectada muta y puede infectar nuevos objetivos.
+- Propagación del cáncer por conversión de células sanas y eliminación de células cancerígenas por las células defensivas.
 
 ### Consideraciones técnicas
 
 1. El espacio de simulación es intencionalmente acotado para favorecer las
    consultas espaciales y el comportamiento del KD-Tree.
-2. El modelo de infección no incorpora regeneración ni decaimiento de la
-   población cancerígena.
+2. El modelo no incorpora regeneración de células sanas. La población cancerígena puede crecer por conversión y disminuir por acción defensiva.
 3. Cada población celular se representa mediante una versión generalizada de
    su comportamiento.
 4. El modelo prioriza la experimentación visual y computacional por sobre la
@@ -86,10 +85,21 @@ representación diferentes.
 ```text
 numpy>=1.26
 scipy>=1.12
-pyglet>=2.1
-moderngl>=5.10
-pillow>=10.0
+pyglet>=2.1,<3
+moderngl>=5.10,<6
+pillow>=10
 ```
+
+Para ejecutar la versión 2D desde la carpeta del repositorio:
+
+```powershell
+py -m pip install -r requirements.txt
+py .\Cellswar2D.py
+```
+
+Mantén `render_moderngl.py` junto al archivo de la simulación: contiene el dibujo de las primitivas 2D. La versión 3D está en [cellswar3D.rar](cellswar3D.rar), con sus texturas, requisitos e instrucciones.
+
+ModernGL administra el renderizado sobre un contexto **OpenGL 3.3 o superior**. La geometría se dibuja con shaders y buffers de ModernGL; sigue siendo necesario el soporte del controlador gráfico. [Contextos de ModernGL](https://moderngl.readthedocs.io/en/latest/reference/context.html).
 
 ---
 
@@ -107,6 +117,7 @@ La idea es utilizar las propiedades de los grafos para representar una red de ne
 - Utiliza **Dijkstra** para calcular la ruta con menor suma de distancias entre dos neuronas. El impulso de esa ruta no se bifurca.
 - Utiliza **Prim** para construir el árbol que conecta la distribución inicial y para calcular el árbol de costo mínimo de la red final. Al mostrarlo, las demás conexiones siguen transmitiendo pulsos.
 - Separa la lógica del grafo de la visualización, lo que permite comprobar el modelo sin abrir una ventana.
+- Dibuja neuronas, impulsos, conexiones y botones con ModernGL, reutilizando buffers. Pyglet mantiene la ventana, los eventos y los textos.
 
 ### Controles
 
@@ -125,10 +136,10 @@ La idea es utilizar las propiedades de los grafos para representar una red de ne
 ### Requisitos
 
 - Python; esta versión se probó con **Python 3.11.4** en Windows.
-- **Pyglet 2.1**, la única dependencia externa de esta simulación.
-- Soporte gráfico para **OpenGL 3.3 o superior**.
+- **Pyglet 2.1** y **ModernGL 5** para la ventana y el renderizado.
+- Un controlador gráfico con soporte del contexto OpenGL 3.3 que utiliza ModernGL.
 
-El archivo `requirements.txt` del comprimido especifica `pyglet>=2.1,<3`.
+El archivo `requirements.txt` del comprimido especifica `pyglet>=2.1,<3` y `moderngl>=5.10,<6`. La lógica de grafos se mantiene independiente de estas dependencias gráficas.
 
 ### Cómo ejecutarlo
 

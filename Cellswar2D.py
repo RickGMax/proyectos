@@ -1,6 +1,11 @@
+"""Cells'War 2D: dinámica con KD-tree y geometría dibujada con ModernGL.
+
+Pyglet mantiene la ventana, los controles, el texto y el contador de FPS.
+"""
+
 import pyglet
-from pyglet import shapes
 from pyglet.window import key
+from render_moderngl import Renderer2D, Circle, Line
 from scipy.spatial import KDTree
 import numpy as np
 import random
@@ -40,40 +45,12 @@ OVERCROWD_N          = 5
 cursor_mode  = None
 show_heatmap = False   # toggle con tecla G
 
-# VENTANA
-
-window = pyglet.window.Window(WIDTH, HEIGHT, "Cancer Boids")
-batch        = pyglet.graphics.Batch()
-ui_batch     = pyglet.graphics.Batch()
-heatmap_batch = pyglet.graphics.Batch()
-
-group_heatmap = pyglet.graphics.Group(order=0)   # debajo de las células
-group_cells   = pyglet.graphics.Group(order=1)
-group_ui_txt  = pyglet.graphics.Group(order=2)
-
-# FPS
-
-fps_display = pyglet.window.FPSDisplay(window)
-fps_display.label.font_size = 11
-fps_display.label.x = WIDTH - 80
-fps_display.label.y = HEIGHT - 18
-
-# HUD
-
-hud_label = pyglet.text.Label(
-    "",
-    font_name="Courier New",
-    font_size=11,
-    x=14,
-    y=HEIGHT - 14,
-    anchor_x="left",
-    anchor_y="top",
-    color=(180, 255, 180, 255),
-    multiline=True,
-    width=340,
-    batch=ui_batch,
-    group=group_ui_txt
-)
+# La escena se crea al ejecutar initialize(), después de disponer de un
+# contexto gráfico. Importar el archivo no inicia la simulación.
+window = renderer = None
+batch = ui_batch = heatmap_batch = None
+group_heatmap = group_cells = group_ui_txt = None
+fps_display = hud_label = None
 
 # UTILIDADES
 
@@ -156,7 +133,7 @@ class Cell:
         self.alive     = True
 
         color = (220, 60, 90) if cancer else (80, 200, 120)
-        self.circle = shapes.Circle(
+        self.circle = Circle(
             self.position[0], self.position[1],
             self.radius, color=color,
             batch=batch, group=group_cells
@@ -326,12 +303,12 @@ class WhiteCell:
         self.radius    = 7
         self.alive     = True
 
-        self.circle = shapes.Circle(
+        self.circle = Circle(
             self.position[0], self.position[1],
             self.radius, color=(230, 240, 255),
             batch=batch, group=group_cells
         )
-        self.nucleus = shapes.Circle(
+        self.nucleus = Circle(
             self.position[0], self.position[1],
             3, color=(40, 80, 180),
             batch=batch, group=group_cells
@@ -401,19 +378,20 @@ class WhiteCell:
 cells       = []
 white_cells = []
 
-for _ in range(NUM_HEALTHY):
-    position = (random.uniform(0, WIDTH), random.uniform(0, HEIGHT))
-    velocity = np.random.uniform(-50, 50, 2)
-    cells.append(Cell(position, velocity, cancer=False))
+def create_population():
+    for _ in range(NUM_HEALTHY):
+        position = (random.uniform(0, WIDTH), random.uniform(0, HEIGHT))
+        velocity = np.random.uniform(-50, 50, 2)
+        cells.append(Cell(position, velocity, cancer=False))
 
-for _ in range(NUM_CANCER):
-    position = (WIDTH/2 + random.uniform(-50, 50), HEIGHT/2 + random.uniform(-50, 50))
-    velocity = np.random.uniform(-80, 80, 2)
-    cells.append(Cell(position, velocity, cancer=True))
+    for _ in range(NUM_CANCER):
+        position = (WIDTH/2 + random.uniform(-50, 50), HEIGHT/2 + random.uniform(-50, 50))
+        velocity = np.random.uniform(-80, 80, 2)
+        cells.append(Cell(position, velocity, cancer=True))
 
-for _ in range(NUM_WHITE):
-    position = (random.uniform(0, WIDTH), random.uniform(0, HEIGHT))
-    white_cells.append(WhiteCell(position))
+    for _ in range(NUM_WHITE):
+        position = (random.uniform(0, WIDTH), random.uniform(0, HEIGHT))
+        white_cells.append(WhiteCell(position))
 
 # INFECCIÓN  —  usa KD-tree de sanas
 
@@ -463,7 +441,7 @@ def white_cell_attack():
 #    Cáncer cerca  → rojo
 #    Leucos cerca  → azul
 #
-#  Implementación: las líneas son shapes.Line estáticas (posición fija).
+#  Implementación: las líneas son geometría ModernGL de posición fija.
 #  Solo su color se actualiza cada frame. Segmentos horizontales y
 #  verticales se tratan por separado para colorear tramo a tramo.
 
@@ -478,38 +456,40 @@ GRID_SAT    = 6     # células que saturan el color
 # Color base de la grilla (inactiva)
 _GRID_DIM = (30, 32, 40, 90)
 
-# Crear líneas horizontales: una por cada fila × columna (segmento entre nodos)
-# Cada segmento va de (col*CW, row*CH) a ((col+1)*CW, row*CH)
 _hlines = []   # shape: (GRID_ROWS+1, GRID_COLS)
-for _row in range(GRID_ROWS + 1):
-    row_segs = []
-    for _col in range(GRID_COLS):
-        x0 = _col       * CELL_W
-        x1 = (_col + 1) * CELL_W
-        y  = _row       * CELL_H
-        seg = shapes.Line(
-            x0, y, x1, y,
-            color=_GRID_DIM,
-            batch=heatmap_batch, group=group_heatmap
-        )
-        row_segs.append(seg)
-    _hlines.append(row_segs)
-
-# Crear líneas verticales: una por cada col × fila (segmento entre nodos)
 _vlines = []   # shape: (GRID_COLS+1, GRID_ROWS)
-for _col in range(GRID_COLS + 1):
-    col_segs = []
-    for _row in range(GRID_ROWS):
-        x  = _col       * CELL_W
-        y0 = _row       * CELL_H
-        y1 = (_row + 1) * CELL_H
-        seg = shapes.Line(
-            x, y0, x, y1,
-            color=_GRID_DIM,
-            batch=heatmap_batch, group=group_heatmap
-        )
-        col_segs.append(seg)
-    _vlines.append(col_segs)
+
+
+def create_grid():
+    # Una línea horizontal por tramo entre nodos de la grilla.
+    for _row in range(GRID_ROWS + 1):
+        row_segs = []
+        for _col in range(GRID_COLS):
+            x0 = _col       * CELL_W
+            x1 = (_col + 1) * CELL_W
+            y  = _row       * CELL_H
+            seg = Line(
+                x0, y, x1, y,
+                color=_GRID_DIM,
+                batch=heatmap_batch, group=group_heatmap
+            )
+            row_segs.append(seg)
+        _hlines.append(row_segs)
+
+    # Una línea vertical por tramo entre nodos de la grilla.
+    for _col in range(GRID_COLS + 1):
+        col_segs = []
+        for _row in range(GRID_ROWS):
+            x  = _col       * CELL_W
+            y0 = _row       * CELL_H
+            y1 = (_row + 1) * CELL_H
+            seg = Line(
+                x, y0, x, y1,
+                color=_GRID_DIM,
+                batch=heatmap_batch, group=group_heatmap
+            )
+            col_segs.append(seg)
+        _vlines.append(col_segs)
 
 
 def _node_color(nx, ny):
@@ -609,8 +589,6 @@ def update(dt):
     update_ui()
 
 
-pyglet.clock.schedule_interval(update, 1 / 60)
-
 # UI
 
 def update_ui():
@@ -634,9 +612,8 @@ def update_ui():
 
 # DRAW
 
-@window.event
 def on_draw():
-    window.clear()
+    renderer.clear((0.0, 0.0, 0.0, 1.0))
     if show_heatmap:
         heatmap_batch.draw()
     batch.draw()
@@ -646,7 +623,6 @@ def on_draw():
 
 # MOUSE
 
-@window.event
 def on_mouse_press(x, y, button, modifiers):
     global cursor_mode, cells, white_cells
 
@@ -670,11 +646,9 @@ def on_mouse_press(x, y, button, modifiers):
 
 # KEYBOARD
 
-@window.event
 def on_activate():
     pass  # garantiza foco de teclado en Windows
 
-@window.event
 def on_key_press(symbol, modifiers):
     global cursor_mode, show_heatmap
 
@@ -703,7 +677,76 @@ def on_key_press(symbol, modifiers):
     update_ui()
 
 
-# RUN
+def on_close():
+    """Retira la actualización y libera la geometría antes de cerrar."""
+    global renderer
+    pyglet.clock.unschedule(update)
+    if renderer is not None:
+        renderer.release()
+        renderer = None
 
-update_ui()
-pyglet.app.run()
+
+def initialize(visible=True):
+    """Crea la ventana y la escena; admite una ventana oculta para verificarla."""
+    global window, renderer, batch, ui_batch, heatmap_batch
+    global group_heatmap, group_cells, group_ui_txt, fps_display, hud_label
+    global cursor_mode, show_heatmap
+    if window is not None and window.context is not None:
+        raise RuntimeError("La simulación ya tiene una ventana abierta")
+
+    config = pyglet.gl.Config(double_buffer=True, major_version=3, minor_version=3)
+    window = pyglet.window.Window(
+        WIDTH, HEIGHT, "Cancer Boids", config=config, visible=visible
+    )
+    try:
+        renderer = Renderer2D(window)
+        batch = renderer.batch()
+        heatmap_batch = renderer.batch()
+        ui_batch = pyglet.graphics.Batch()
+        group_heatmap = pyglet.graphics.Group(order=0)
+        group_cells = pyglet.graphics.Group(order=1)
+        group_ui_txt = pyglet.graphics.Group(order=2)
+
+        fps_display = pyglet.window.FPSDisplay(window)
+        fps_display.label.font_size = 11
+        fps_display.label.x = WIDTH - 80
+        fps_display.label.y = HEIGHT - 18
+        hud_label = pyglet.text.Label(
+            "", font_name="Courier New", font_size=11,
+            x=14, y=HEIGHT - 14, anchor_x="left", anchor_y="top",
+            color=(180, 255, 180, 255), multiline=True, width=340,
+            batch=ui_batch, group=group_ui_txt
+        )
+
+        cells.clear()
+        white_cells.clear()
+        _hlines.clear()
+        _vlines.clear()
+        cursor_mode = None
+        show_heatmap = False
+        create_population()
+        create_grid()
+        update_ui()
+        window.push_handlers(
+            on_draw=on_draw, on_mouse_press=on_mouse_press,
+            on_activate=on_activate, on_key_press=on_key_press, on_close=on_close
+        )
+        pyglet.clock.schedule_interval(update, 1 / 60)
+    except Exception:
+        on_close()
+        window.close()
+        raise
+    return window
+
+
+def main():
+    initialize()
+    try:
+        pyglet.app.run()
+    finally:
+        on_close()
+        window.close()
+
+
+if __name__ == "__main__":
+    main()
