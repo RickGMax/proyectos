@@ -36,7 +36,7 @@
 | **Cells'War** | Representar la interacción entre células normales, células blancas y células cancerígenas. | NumPy, SciPy, Pyglet, ModernGL y KD-Tree |
 | **Redes de impulsos nerviosos** | Explorar la propagación de impulsos en una red de neuronas representada como un grafo en 3D. | Python, Pyglet, Dijkstra y Prim |
 | **Biodiversidad de Chile** | Modelar información sobre especies, regiones y clasificaciones de conservación. | Modelo entidad-relación, modelo relacional y FNBC |
-| **Scala y POO** | Modelar entidades y programar turnos de un videojuego. | Scala 3, POO y MUnit |
+| **Scala y POO** | Modelar un combate por turnos e integrar sus acciones y el control de turnos. | Scala 3, POO, Visitor, sbt y MUnit |
 
 > [!NOTE]
 > Las simulaciones son modelos visuales simplificados. Su propósito es explorar
@@ -175,19 +175,29 @@ Diseño de una base de datos para organizar información sobre especies presente
 ## POO: Sistema de turnos en Scala
 
 **Proyecto académico · Scala 3 · MUnit**  
-**Etapa actual:** modelo del juego y programador de turnos.
+**Etapa actual:** modelo del juego y controlador de combate integrados.
 
-Desarrollo de las estructuras de un videojuego por turnos: personajes, enemigos, armas, pociones, paneles de mapa y acciones.
+La idea es desarrollar la lógica de un videojuego por turnos a partir de personajes, enemigos, armas, pociones y paneles de mapa. El controlador ya conecta estas entidades con las acciones disponibles y el avance de los turnos.
 
 **Aspectos implementados:**
 
-- Jerarquías de clases para unidades, utilizables y acciones.
-- Paneles con coordenadas, unidades y referencias a paneles adyacentes.
-- Barras de acción basadas en el peso de cada unidad y su arma equipada.
-- `TurnScheduler` que detecta las unidades listas y asigna el siguiente turno según el excedente de barra.
-- Pruebas unitarias con MUnit para las entidades y el programador de turnos.
+- Jerarquías de unidades, armas, pociones y acciones, con compatibilidad de equipamiento según el personaje.
+- Ataques físicos, consumo de pociones, equipamiento y movimiento entre paneles adyacentes.
+- Hechizos de magia blanca y negra, con validación y consumo de maná.
+- Inventarios y acciones disponibles según el estado de la unidad; uso de Visitor para distinguir armas y pociones.
+- Barras de acción basadas en el peso de la unidad y su arma. `TurnScheduler` selecciona las unidades listas según el excedente de barra.
+- `GameController` que valida quién tiene el turno, ejecuta una acción por nombre, descarta unidades derrotadas del planificador y avanza después de una acción exitosa.
+- Reinicio del combate mediante `resetGame()`, que restaura el estado de las unidades capturado al crear el controlador.
+- Pruebas con MUnit para las entidades, las acciones, los turnos, el controlador y la configuración del proyecto.
 
-> **Siguiente etapa:** conectar estas mecánicas en `GameController` para ejecutar las acciones y el flujo del combate.
+El código actualizado está en [ProyectoScala](ProyectoScala/README.md), organizado en `src/main/scala` y `src/test/scala`. Incluye la configuración de sbt para ejecutar las pruebas desde esa carpeta:
+
+```powershell
+Set-Location .\ProyectoScala
+sbt test
+```
+
+> **Siguiente etapa propuesta:** conectar el combate con una interfaz y completar el flujo de partida, incluida la condición de victoria. La lógica actual todavía no incluye una entrada interactiva para jugar.
 
 ## Alcance de los modelos
 

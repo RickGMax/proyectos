@@ -1,0 +1,8 @@
+# Archivos generados por sbt, Scala CLI y los editores.
+target/
+project/project/
+.bsp/
+.bloop/
+.metals/
+.scala-build/
+.idea/
