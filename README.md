@@ -2,7 +2,7 @@
 
 <h1>Proyectos</h1>
 
-<h3>Simulaciones gráficas,bases de datos y proyectos escalables</h3>
+<h3>Simulaciones gráficas, bases de datos y proyectos escalables</h3>
 
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![Pyglet](https://img.shields.io/badge/Pyglet-2.1%2B-74B900?style=for-the-badge)
@@ -12,7 +12,7 @@
 ![SQL](https://img.shields.io/badge/SQL-Database-4479A1?style=for-the-badge&logo=postgresql&logoColor=white)
 
 <p>
-  Propuestas variadas de proyectos e ideas para desarrollar con respecto a tematicas de biologia, computacion grafica, teoria de grafos o simplemente pruebas de proyectos escalables.
+  Proyectos e ideas para explorar temas de biología, computación gráfica, teoría de grafos, bases de datos y programación orientada a objetos.
 </p>
 
 </div>
@@ -24,30 +24,32 @@
 - [Descripción general](#descripción-general)
 - [Cells'War](#cellswar)
 - [Redes de impulsos nerviosos](#redes-de-impulsos-nerviosos)
-- [Base de Datos](#bases-de-datos-biodiversidad-de-chile)
-- [Proyecto de Scala](#poo-sistema-de-turnos-en-scala)
+- [Biodiversidad de Chile](#bases-de-datos-biodiversidad-de-chile)
+- [Sistema de turnos en Scala](#poo-sistema-de-turnos-en-scala)
 - [Alcance de los modelos](#alcance-de-los-modelos)
 
 
 ## Descripción general
 
-| Simulación | Objetivo principal | Tecnologías destacadas |
+| Proyecto | Objetivo principal | Tecnologías y conceptos principales |
 | --- | --- | --- |
 | **Cells'War** | Representar la interacción entre células normales, células blancas y células cancerígenas. | NumPy, SciPy, Pyglet, ModernGL y KD-Tree |
-| **Redes de impulsos nerviosos** | Representar la interacción del tejido nervioso y sus principales mecanismos. | NumPy,Pyglet|
+| **Redes de impulsos nerviosos** | Explorar la propagación de impulsos en una red de neuronas representada como un grafo en 3D. | Python, Pyglet, Dijkstra y Prim |
 | **Biodiversidad de Chile** | Modelar información sobre especies, regiones y clasificaciones de conservación. | Modelo entidad-relación, modelo relacional y FNBC |
 | **Scala y POO** | Modelar entidades y programar turnos de un videojuego. | Scala 3, POO y MUnit |
 
 > [!NOTE]
-> Los proyectos son modelos visuales simplificados. Su propósito es explorar
+> Las simulaciones son modelos visuales simplificados. Su propósito es explorar
 > técnicas de simulación y computación gráfica, no reproducir con exactitud un
 > sistema biológico o físico real.
 
 ---
 
 ## Cells'War
+
 ![Simulación de células](assets/cellswar2d.JPG)
 ![Simulación de células](assets/cellswar3d.JPG)
+
 **Cells'War** es una simulación semi-realista de las interacciones entre tres
 poblaciones celulares:
 
@@ -91,39 +93,62 @@ pillow>=10.0
 
 ---
 
----
 ## Redes de impulsos nerviosos
+
 ![Simulación de redes](assets/redcompleja.JPG)
+
+La idea es utilizar las propiedades de los grafos para representar una red de neuronas y observar cómo se propaga un impulso entre ellas. Los vértices representan las neuronas y las aristas sus conexiones. La vista 3D permite recorrer la red y comparar la propagación con una ruta mínima o un árbol de costo mínimo.
 
 ### Características principales
 
--Utiliza propiedades de grafos, vertices y aristas para modelar una red de neuronas.
-
--Los vertices representan las neuronas y las aristas las conexiones(que vendrian siendo las conexiones entre dendritas), trae cierta componente grafica para mejorar la visualizacion de los organismos 
-
--Para evitar loops de propagacion existe un parametro de refraccion que funciona como ventana de tiempo. 
-
--Utiliza algoritmos como dikjstra para alcanzar la distancia mas corta entre 2 neuronas.
-
--Utiliza Kruskall para encontrar el arbol de costo minimo.
+- Parte con **120 neuronas** distribuidas en el espacio, con conexiones cercanas y algunos enlaces largos.
+- Cada neurona pasa por reposo, disparo y un período refractario que limita las activaciones seguidas.
+- Para evitar loops de propagación, cada onda puede activar una sola vez a cada neurona, aunque encuentre otro camino para regresar.
+- Utiliza **Dijkstra** para calcular la ruta con menor suma de distancias entre dos neuronas. El impulso de esa ruta no se bifurca.
+- Utiliza **Prim** para construir el árbol que conecta la distribución inicial y para calcular el árbol de costo mínimo de la red final. Al mostrarlo, las demás conexiones siguen transmitiendo pulsos.
+- Separa la lógica del grafo de la visualización, lo que permite comprobar el modelo sin abrir una ventana.
 
 ### Controles
 
-| Tecla | Acción |
+| Control | Acción |
 | :---: | --- |
-| `R` | Reinicia la red. |
-| `Click izquierdo` | Inicia un pulso desde una neurona. |
-| `P` | Genera un pulso desde 2 neuronas aleatorias. |
-| `M` | Arbol de costo minimo. |
-| `Espacio` | Genera un pulso en algun punto aleatorio. |
+| Clic izquierdo sobre una neurona | Inicia un pulso si está en reposo. |
+| Arrastrar con el botón izquierdo | Gira la cámara alrededor de la red. |
+| Rueda del mouse | Acerca o aleja la cámara. |
+| `Espacio` | Intenta iniciar una onda desde una neurona aleatoria. |
+| `P` | Calcula una ruta mínima entre dos neuronas aleatorias e intenta enviar un impulso por ella. |
+| `M` | Muestra u oculta el árbol de costo mínimo. |
+| `R` | Genera otra red y borra la actividad anterior. |
+| `C` | Restablece la orientación y centra la cámara. |
+| `Esc` | Cierra la simulación. |
 
 ### Requisitos
 
--Pyglet
+- Python; esta versión se probó con **Python 3.11.4** en Windows.
+- **Pyglet 2.1**, la única dependencia externa de esta simulación.
+- Soporte gráfico para **OpenGL 3.3 o superior**.
 
--Numpy 
+El archivo `requirements.txt` del comprimido especifica `pyglet>=2.1,<3`.
+
+### Cómo ejecutarlo
+
+La versión actualizada está en [Redes_complejas.zip](Redes_complejas.zip). Desde la carpeta del repositorio, ejecuta lo siguiente en PowerShell:
+
+```powershell
+Expand-Archive -LiteralPath .\Redes_complejas.zip -DestinationPath .\Redes_complejas -Force
+Set-Location .\Redes_complejas\3D_neuronas
+py -m pip install -r requirements.txt
+py .\simulacion_red_neuronal_3d.py
+```
+
+Dentro de `3D_neuronas` se incluyen la explicación del modelo, los parámetros para experimentar y las pruebas del núcleo. Para ejecutar esas pruebas desde la misma carpeta:
+
+```powershell
+py -m unittest discover -s tests -v
+```
 
 ---
+
 ## Bases de datos: Biodiversidad de Chile
 
 **Proyecto académico grupal**  
@@ -137,7 +162,7 @@ Diseño de una base de datos para organizar información sobre especies presente
 - Nombres comunes y sinónimos de cada especie.
 - Clasificaciones de conservación actuales e históricas.
 - Modelo entidad-relación, esquema relacional y análisis de FNBC.
-- link de la pagina: https://grupo36.cc3201.dcc.uchile.cl/
+- [Página del proyecto](https://grupo36.cc3201.dcc.uchile.cl/).
 
 **Modelo entidad-relación**
 
@@ -171,8 +196,8 @@ Estas simulaciones permiten estudiar y visualizar:
 - interacciones locales entre agentes;
 - estructuras de búsqueda espacial;
 - crecimiento y propagación de poblaciones;
-- Estudio del uso de los grafos y sus propiedades
-- Aplicaciones de tecnicas graficas para el desarrollo de aplicaciones relacionadads con la biologia
+- uso de grafos y sus propiedades;
+- aplicaciones de técnicas gráficas relacionadas con la biología.
 
 Los resultados deben interpretarse como aproximaciones computacionales con
 fines educativos y experimentales.
@@ -186,9 +211,3 @@ Desarrollado como una exploración de **simulación**, **física** y
 
 
 </div>
-
-
-
-
-
-
