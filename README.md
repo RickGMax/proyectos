@@ -26,6 +26,7 @@
   - [Consultas de la aplicación](#consultas-de-la-aplicación)
 - [Power BI: Uso, prioridades y expectativas sobre la IA](#power-bi-uso-prioridades-y-expectativas-sobre-la-ia)
 - [Cells'War](#cellswar)
+- [Sistema de turnos en Scala](#sistema-de-turnos-en-scala)
 
 ## Bases de datos: Biodiversidad de Chile
 
@@ -120,6 +121,12 @@ py .\Cellswar2D.py
 Mantén `render_moderngl.py` junto al archivo de la simulación: contiene el dibujo de las primitivas 2D. La versión 3D está en [cellswar3D.rar](cellswar3D.rar), con sus texturas, requisitos e instrucciones.
 
 ModernGL administra el renderizado sobre un contexto **OpenGL 3.3 o superior**. La geometría se dibuja con shaders y buffers de ModernGL; sigue siendo necesario el soporte del controlador gráfico. [Contextos de ModernGL](https://moderngl.readthedocs.io/en/latest/reference/context.html).
+
+---
+
+## Sistema de turnos en Scala
+
+Proyecto académico en Scala 3 que modela un combate por turnos. Incluye un controlador de acciones, un planificador por barras de acción y pruebas con MUnit. [Código e instrucciones de la versión archivada](https://github.com/RickGMax/proyectos/tree/ec16bc8c8b51eee6617754ea3ba9a2b6aeab2826/ProyectoScala)
 
 ---
 
