@@ -39,8 +39,7 @@ El proyecto organiza información sobre especies presentes en Chile. El modelo r
 ### Mi aporte
 
 - **Modelo relacional.** Diseñé el esquema relacional a partir del modelo entidad-relación. Definí las tablas y sus claves, incluidas las relaciones que vinculan especies con regiones y conectan los niveles de la jerarquía taxonómica. Revisé la normalización del esquema con la forma normal de Boyce-Codd (FNBC).
-- **Implementación web y consultas.** Implementé la interfaz en HTML, CSS y JavaScript y la conecté a PostgreSQL mediante una API en PHP con PDO. Integré consultas SQL parametrizadas y presenté los resultados con filtros, tablas y paginación en la búsqueda de especies.
-- **Desarrollo asistido por IA.** Usé Codex para revisar consultas SQL, preparar pruebas y diagnosticar datos faltantes. Por ejemplo, comparé los vínculos entre filo y reino en PostgreSQL con los registros de origen para corregir clasificaciones incompletas.
+- **Implementación web y consultas.** Desarrollé FurFan Web con ayuda de Codex, un asistente de programación con IA. Implementé la interfaz con HTML, CSS y JavaScript y la conecté a PostgreSQL mediante una API en PHP con PDO. Integré consultas SQL parametrizadas y agregué filtros y paginación a la búsqueda de especies.
 
 ### Consultas de la aplicación
 
