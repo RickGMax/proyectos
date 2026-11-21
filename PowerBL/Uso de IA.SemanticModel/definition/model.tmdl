@@ -1,0 +1,17 @@
+model Model
+	culture: es-CL
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	discourageImplicitMeasures
+	sourceQueryCulture: es-CL
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation PBI_QueryOrder = ["Uso", "Prioridades", "Expectativas"]
+
+annotation PBI_ProTooling = ["DevMode"]
+
+ref table Uso
+ref table Prioridades
+ref table Expectativas
+

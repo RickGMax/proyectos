@@ -1,0 +1,15 @@
+﻿herramienta,ambito,encuestados,base,porcentaje,orden,ic90_inf,ic90_sup
+ChatGPT,Personal,669,2015,32.57,1,30.84,34.35
+ChatGPT,Trabajo,252,1291,19.07,1,17.3,20.97
+Google Gemini,Personal,642,2015,31.09,2,29.38,32.84
+Google Gemini,Trabajo,204,1291,15.53,2,13.92,17.3
+Meta AI,Personal,220,2015,10.8,3,9.69,12.02
+Meta AI,Trabajo,38,1291,3.06,3,2.35,3.97
+Microsoft Copilot,Personal,211,2015,10.48,4,9.39,11.68
+Microsoft Copilot,Trabajo,198,1291,14.9,4,13.31,16.64
+Claude,Personal,139,2015,6.51,5,5.65,7.5
+Claude,Trabajo,109,1291,7.81,5,6.64,9.15
+Grok,Personal,81,2015,4.0,6,3.33,4.81
+Grok,Trabajo,21,1291,1.48,6,1.01,2.16
+Perplexity,Personal,44,2015,2.17,7,1.69,2.79
+Perplexity,Trabajo,8,1291,0.54,7,0.29,1.01

@@ -1,0 +1,113 @@
+/// Encuesta Epoch AI e Ipsos, 9–11 de octubre de 2026, Estados Unidos. Una fila por herramienta y ámbito. Selección múltiple.
+table Uso
+	lineageTag: 7d017936-4efa-5613-b2a4-f19e085c9fc0
+
+	measure 'Personal · personas' = CALCULATE(SELECTEDVALUE(Uso[Encuestados]), KEEPFILTERS(Uso[Ámbito] = "Personal"))
+		formatString: #,##0
+		lineageTag: 9f3a37cc-07a7-593d-b7c9-644cac4dc818
+
+	measure 'Trabajo · personas' = CALCULATE(SELECTEDVALUE(Uso[Encuestados]), KEEPFILTERS(Uso[Ámbito] = "Trabajo"))
+		formatString: #,##0
+		lineageTag: a9d9c2e2-9102-5ee7-a75b-f940e2111e52
+
+	measure Personal = DIVIDE(CALCULATE(SELECTEDVALUE(Uso[Porcentaje]), KEEPFILTERS(Uso[Ámbito] = "Personal")), 100)
+		formatString: 0.0%
+		lineageTag: c5bc39dc-188e-5066-95bd-7c2b29cd7f7e
+
+	measure Trabajo = DIVIDE(CALCULATE(SELECTEDVALUE(Uso[Porcentaje]), KEEPFILTERS(Uso[Ámbito] = "Trabajo")), 100)
+		formatString: 0.0%
+		lineageTag: 437aa7fa-fb82-52ba-895c-8b19806fa491
+
+	measure 'Personal · IC 90 % inferior' = DIVIDE(CALCULATE(SELECTEDVALUE(Uso[IC 90 % inferior]), KEEPFILTERS(Uso[Ámbito] = "Personal")), 100)
+		formatString: 0.0%
+		lineageTag: 2bf68b24-bf13-5916-b3ab-b89e125add21
+
+	measure 'Personal · IC 90 % superior' = DIVIDE(CALCULATE(SELECTEDVALUE(Uso[IC 90 % superior]), KEEPFILTERS(Uso[Ámbito] = "Personal")), 100)
+		formatString: 0.0%
+		lineageTag: 1634f451-c451-502c-a915-6ae3cd72441c
+
+	measure 'Trabajo · IC 90 % inferior' = DIVIDE(CALCULATE(SELECTEDVALUE(Uso[IC 90 % inferior]), KEEPFILTERS(Uso[Ámbito] = "Trabajo")), 100)
+		formatString: 0.0%
+		lineageTag: cfb6c253-ca3b-5440-b77a-3bceacbbc85b
+
+	measure 'Trabajo · IC 90 % superior' = DIVIDE(CALCULATE(SELECTEDVALUE(Uso[IC 90 % superior]), KEEPFILTERS(Uso[Ámbito] = "Trabajo")), 100)
+		formatString: 0.0%
+		lineageTag: 36c7071f-48f5-5f47-822e-c539d59715d8
+
+	column Herramienta
+		dataType: string
+		lineageTag: 21f965ee-393a-523e-8cf4-50f793bf9613
+		summarizeBy: none
+		sourceColumn: Herramienta
+
+	column Ámbito
+		dataType: string
+		lineageTag: a7ab010d-11af-5ff8-99dd-fcb2b50912b1
+		summarizeBy: none
+		sourceColumn: Ámbito
+
+	column Encuestados
+		dataType: int64
+		isHidden
+		lineageTag: 72e99006-b4ef-5de1-8e78-6e503f82cb4f
+		summarizeBy: none
+		sourceColumn: Encuestados
+
+	column Base
+		dataType: int64
+		lineageTag: f384e3a1-410c-5e97-92c9-eeffc498419f
+		summarizeBy: none
+		sourceColumn: Base
+
+	column Porcentaje
+		dataType: double
+		isHidden
+		lineageTag: f2a6ded6-974e-55dc-b647-eae4cf038a09
+		summarizeBy: none
+		sourceColumn: Porcentaje
+
+	column Orden
+		dataType: int64
+		isHidden
+		lineageTag: bd4c901d-4edb-5ebe-bf78-efdd39fee9a9
+		summarizeBy: none
+		sourceColumn: Orden
+
+	column 'IC 90 % inferior'
+		dataType: double
+		isHidden
+		lineageTag: fde05bcd-9669-5480-85ef-33543abc8e9a
+		summarizeBy: none
+		sourceColumn: IC 90 % inferior
+
+	column 'IC 90 % superior'
+		dataType: double
+		isHidden
+		lineageTag: e9e4f19c-0063-587e-81fb-8c5bee1c92e5
+		summarizeBy: none
+		sourceColumn: IC 90 % superior
+
+	partition Uso = m
+		mode: import
+		source =
+				let
+				    Fuente = #table({"Herramienta", "Ámbito", "Encuestados", "Base", "Porcentaje", "Orden", "IC 90 % inferior", "IC 90 % superior"}, {
+				        {"ChatGPT", "Personal", 669, 2015, 32.57, 1, 30.84, 34.35},
+				        {"ChatGPT", "Trabajo", 252, 1291, 19.07, 1, 17.3, 20.97},
+				        {"Google Gemini", "Personal", 642, 2015, 31.09, 2, 29.38, 32.84},
+				        {"Google Gemini", "Trabajo", 204, 1291, 15.53, 2, 13.92, 17.3},
+				        {"Meta AI", "Personal", 220, 2015, 10.8, 3, 9.69, 12.02},
+				        {"Meta AI", "Trabajo", 38, 1291, 3.06, 3, 2.35, 3.97},
+				        {"Microsoft Copilot", "Personal", 211, 2015, 10.48, 4, 9.39, 11.68},
+				        {"Microsoft Copilot", "Trabajo", 198, 1291, 14.9, 4, 13.31, 16.64},
+				        {"Claude", "Personal", 139, 2015, 6.51, 5, 5.65, 7.5},
+				        {"Claude", "Trabajo", 109, 1291, 7.81, 5, 6.64, 9.15},
+				        {"Grok", "Personal", 81, 2015, 4, 6, 3.33, 4.81},
+				        {"Grok", "Trabajo", 21, 1291, 1.48, 6, 1.01, 2.16},
+				        {"Perplexity", "Personal", 44, 2015, 2.17, 7, 1.69, 2.79},
+				        {"Perplexity", "Trabajo", 8, 1291, 0.54, 7, 0.29, 1.01}
+				    }),
+				    Tipos = Table.TransformColumnTypes(Fuente, {{"Herramienta", type text}, {"Ámbito", type text}, {"Encuestados", Int64.Type}, {"Base", Int64.Type}, {"Porcentaje", type number}, {"Orden", Int64.Type}, {"IC 90 % inferior", type number}, {"IC 90 % superior", type number}}, "es-CL")
+				in
+				    Tipos
+

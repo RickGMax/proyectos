@@ -1,0 +1,88 @@
+/// Pew Research Center, adultos de Estados Unidos, febrero de 2026. Impacto esperado de la IA en dos ámbitos durante los próximos 20 años.
+table Expectativas
+	lineageTag: ac6b4beb-e2b0-53d1-a2ed-5a737fb3216a
+
+	measure Sociedad = DIVIDE(CALCULATE(SELECTEDVALUE(Expectativas[Porcentaje]), KEEPFILTERS(Expectativas[Grupo] = "Sociedad")), 100)
+		formatString: 0%
+		lineageTag: f7f1ea69-128f-5eb8-95c2-7b6c90393b9c
+
+	measure 'Vida personal' = DIVIDE(CALCULATE(SELECTEDVALUE(Expectativas[Porcentaje]), KEEPFILTERS(Expectativas[Grupo] = "Vida personal")), 100)
+		formatString: 0%
+		lineageTag: 86e79731-c2ce-53ae-bc7a-db0562ac7fd3
+
+	column Indicador
+		dataType: string
+		lineageTag: dee0039d-9679-5a35-998e-c231f7ea9229
+		summarizeBy: none
+		sourceColumn: Indicador
+		sortByColumn: Orden
+
+	column Pregunta
+		dataType: string
+		lineageTag: b95d4239-1802-558b-85c2-a73c365005c7
+		summarizeBy: none
+		sourceColumn: Pregunta
+
+	column Grupo
+		dataType: string
+		lineageTag: 91b5e2f6-06be-53c2-ad19-a9f539a652be
+		summarizeBy: none
+		sourceColumn: Grupo
+
+	column Porcentaje
+		dataType: double
+		isHidden
+		lineageTag: 9b1b7d12-5c41-5cef-8780-2c5b2f785b9a
+		summarizeBy: none
+		sourceColumn: Porcentaje
+
+	column Base
+		dataType: int64
+		lineageTag: eaa1d815-6cff-5036-997e-2d15dafff16f
+		summarizeBy: none
+		sourceColumn: Base
+
+	column Fuente
+		dataType: string
+		lineageTag: 55280837-3410-5f56-801f-d7b3bdc11471
+		summarizeBy: none
+		sourceColumn: Fuente
+
+	column Fecha
+		dataType: string
+		lineageTag: a60880da-73b7-5fdb-9fc3-74968bde439c
+		summarizeBy: none
+		sourceColumn: Fecha
+
+	column 'Fuente URL'
+		dataType: string
+		lineageTag: f14a315b-894e-5d1f-b4de-4936b5b985bf
+		dataCategory: WebUrl
+		summarizeBy: none
+		sourceColumn: Fuente URL
+
+	column Orden
+		dataType: int64
+		isHidden
+		lineageTag: bc49944b-73fe-562d-91fd-b25f2099c9fb
+		summarizeBy: none
+		sourceColumn: Orden
+
+	partition Expectativas = m
+		mode: import
+		source =
+				let
+				    Fuente = #table({"Indicador", "Pregunta", "Grupo", "Porcentaje", "Base", "Fuente", "Fecha", "Fuente URL", "Orden"}, {
+				        {"Negativo", "Negativo", "Sociedad", 40, 5119, "Pew Research Center", "2026-02-23", "https://www.pewresearch.org/chart/americans-predict-ais-impact-on-society-them-will-be-more-negative-than-positive/", 1},
+				        {"Negativo", "Negativo", "Vida personal", 31, 5119, "Pew Research Center", "2026-02-23", "https://www.pewresearch.org/chart/americans-predict-ais-impact-on-society-them-will-be-more-negative-than-positive/", 1},
+				        {"Positivo", "Positivo", "Sociedad", 16, 5119, "Pew Research Center", "2026-02-23", "https://www.pewresearch.org/chart/americans-predict-ais-impact-on-society-them-will-be-more-negative-than-positive/", 2},
+				        {"Positivo", "Positivo", "Vida personal", 23, 5119, "Pew Research Center", "2026-02-23", "https://www.pewresearch.org/chart/americans-predict-ais-impact-on-society-them-will-be-more-negative-than-positive/", 2},
+				        {"Mixto", "Mixto", "Sociedad", 31, 5119, "Pew Research Center", "2026-02-23", "https://www.pewresearch.org/chart/americans-predict-ais-impact-on-society-them-will-be-more-negative-than-positive/", 3},
+				        {"Mixto", "Mixto", "Vida personal", 27, 5119, "Pew Research Center", "2026-02-23", "https://www.pewresearch.org/chart/americans-predict-ais-impact-on-society-them-will-be-more-negative-than-positive/", 3},
+				        {"No sabe", "No sabe", "Sociedad", 13, 5119, "Pew Research Center", "2026-02-23", "https://www.pewresearch.org/chart/americans-predict-ais-impact-on-society-them-will-be-more-negative-than-positive/", 4},
+				        {"No sabe", "No sabe", "Vida personal", 19, 5119, "Pew Research Center", "2026-02-23", "https://www.pewresearch.org/chart/americans-predict-ais-impact-on-society-them-will-be-more-negative-than-positive/", 4}
+				    }),
+				    Tipos = Table.TransformColumnTypes(Fuente, {{"Indicador", type text}, {"Pregunta", type text}, {"Grupo", type text}, {"Porcentaje", type number}, {"Base", Int64.Type}, {"Fuente", type text}, {"Fecha", type text}, {"Fuente URL", type text}, {"Orden", Int64.Type}}, "es-CL")
+				in
+				    Tipos
+

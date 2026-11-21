@@ -2,16 +2,17 @@
 
 <h1>Proyectos</h1>
 
-<h3>Biodiversidad de Chile y simulación computacional</h3>
+<h3>Biodiversidad de Chile, análisis de encuestas y simulación computacional</h3>
 
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
 ![PHP](https://img.shields.io/badge/PHP-777BB4?style=for-the-badge&logo=php&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![Power BI](https://img.shields.io/badge/Power%20BI-F2C811?style=for-the-badge&logo=powerbi&logoColor=black)
 ![Pyglet](https://img.shields.io/badge/Pyglet-2.1%2B-74B900?style=for-the-badge)
 ![ModernGL](https://img.shields.io/badge/ModernGL-5.10%2B-2D2D2D?style=for-the-badge)
 
 <p>
-  FurFan reúne una base de datos relacional y una aplicación web para explorar la biodiversidad de Chile. El portafolio también incluye Cells'War, una simulación de poblaciones celulares.
+  FurFan reúne una base de datos relacional y una aplicación web para explorar la biodiversidad de Chile. El portafolio también incluye un informe en Power BI sobre el uso de IA y Cells'War, una simulación de poblaciones celulares.
 </p>
 
 </div>
@@ -23,6 +24,7 @@
 - [Biodiversidad de Chile](#bases-de-datos-biodiversidad-de-chile)
   - [Mi aporte](#mi-aporte)
   - [Consultas de la aplicación](#consultas-de-la-aplicación)
+- [Power BI: Uso, prioridades y expectativas sobre la IA](#power-bi-uso-prioridades-y-expectativas-sobre-la-ia)
 - [Cells'War](#cellswar)
 
 ## Bases de datos: Biodiversidad de Chile
@@ -45,6 +47,20 @@ El proyecto organiza información sobre especies presentes en Chile. El modelo r
 ### Modelo entidad-relación
 
 ![Modelo entidad-relación del proyecto de biodiversidad](assets/modelo_entidad_relacion.jpg)
+
+---
+
+## Power BI: Uso, prioridades y expectativas sobre la IA
+
+Informe de Power BI sobre el uso de IA entre adultos de Estados Unidos. La primera página compara el uso personal y laboral de siete herramientas con datos de Epoch AI e Ipsos. La segunda reúne prioridades y expectativas a partir de dos encuestas de Pew Research Center. Los scripts de Python y pandas reproducen las tablas de resultados.
+
+El gráfico de uso muestra porcentajes ponderados. Pasa el puntero sobre una barra para consultar los intervalos de confianza del 90 %.
+
+Para explorar el informe, clona o descarga el repositorio y abre `PowerBL/Uso de IA.pbip` en Power BI Desktop. [Guía para abrir el informe y reproducir los datos](PowerBL/LEEME.md)
+
+![Informe de Power BI con el uso personal y laboral de herramientas de IA](PowerBL/previews/uso-ia.png)
+
+![Informe de Power BI con prioridades y expectativas sobre la IA](PowerBL/previews/prioridades-expectativas.png)
 
 ---
 
@@ -109,6 +125,6 @@ ModernGL administra el renderizado sobre un contexto **OpenGL 3.3 o superior**. 
 
 <div align="center">
 
-Bases de datos, desarrollo web y simulación computacional.
+Bases de datos, desarrollo web, análisis de encuestas y simulación computacional.
 
 </div>

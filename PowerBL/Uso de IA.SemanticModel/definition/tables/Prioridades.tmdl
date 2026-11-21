@@ -1,0 +1,78 @@
+/// Pew Research Center, adultos de Estados Unidos, junio de 2025. Cada indicador es una pregunta diferente.
+table Prioridades
+	lineageTag: 6142c927-b61c-5e6b-a4ac-286ab7a5c8fe
+
+	measure 'Porcentaje de adultos' = DIVIDE(SELECTEDVALUE(Prioridades[Porcentaje]), 100)
+		formatString: 0%
+		lineageTag: 66d04dea-b5ab-5c3b-8f6f-95e5c1470750
+
+	column Indicador
+		dataType: string
+		lineageTag: a1513a9a-44a6-533f-82a0-310e6acc2758
+		summarizeBy: none
+		sourceColumn: Indicador
+		sortByColumn: Orden
+
+	column Pregunta
+		dataType: string
+		lineageTag: b3984ec3-aa77-59b3-8a84-4d53a228e952
+		summarizeBy: none
+		sourceColumn: Pregunta
+
+	column Grupo
+		dataType: string
+		lineageTag: 21a8ccc0-c9f6-585a-8640-722ea45422bc
+		summarizeBy: none
+		sourceColumn: Grupo
+
+	column Porcentaje
+		dataType: double
+		isHidden
+		lineageTag: b73bdba4-a584-59ca-ba76-c6fd9ae309ab
+		summarizeBy: none
+		sourceColumn: Porcentaje
+
+	column Base
+		dataType: int64
+		lineageTag: 7152b09b-ec63-59ba-9146-d642685e69ad
+		summarizeBy: none
+		sourceColumn: Base
+
+	column Fuente
+		dataType: string
+		lineageTag: 6e9768bc-1787-5e6f-97eb-dbe73f5f1adc
+		summarizeBy: none
+		sourceColumn: Fuente
+
+	column Fecha
+		dataType: string
+		lineageTag: f89ed263-5911-513a-9db8-e9bb6f4103f0
+		summarizeBy: none
+		sourceColumn: Fecha
+
+	column 'Fuente URL'
+		dataType: string
+		lineageTag: 548e58ad-e954-50ea-923c-d0dccfd19809
+		dataCategory: WebUrl
+		summarizeBy: none
+		sourceColumn: Fuente URL
+
+	column Orden
+		dataType: int64
+		isHidden
+		lineageTag: b7a0d0ee-b870-527d-9af8-4f23febf2679
+		summarizeBy: none
+		sourceColumn: Orden
+
+	partition Prioridades = m
+		mode: import
+		source =
+				let
+				    Fuente = #table({"Indicador", "Pregunta", "Grupo", "Porcentaje", "Base", "Fuente", "Fecha", "Fuente URL", "Orden"}, {
+				        {"Distinguir contenido de IA", "Distinguir contenido hecho con IA es muy o extremadamente importante", "Adultos de EE. UU.", 76, 5023, "Pew Research Center", "2025-06-15", "https://www.pewresearch.org/science/2025/09/17/how-americans-view-ai-and-its-impact-on-people-and-society/", 1},
+				        {"Más control personal", "Quieren más control sobre el uso de IA en sus vidas", "Adultos de EE. UU.", 61, 5023, "Pew Research Center", "2025-06-15", "https://www.pewresearch.org/science/2025/09/17/ai-in-americans-lives-awareness-experiences-and-attitudes/", 2}
+				    }),
+				    Tipos = Table.TransformColumnTypes(Fuente, {{"Indicador", type text}, {"Pregunta", type text}, {"Grupo", type text}, {"Porcentaje", type number}, {"Base", Int64.Type}, {"Fuente", type text}, {"Fecha", type text}, {"Fuente URL", type text}, {"Orden", Int64.Type}}, "es-CL")
+				in
+				    Tipos
+
