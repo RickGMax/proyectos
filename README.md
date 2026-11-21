@@ -2,17 +2,16 @@
 
 <h1>Proyectos</h1>
 
-<h3>Biodiversidad de Chile, simulaciones gráficas y programación orientada a objetos</h3>
+<h3>Biodiversidad de Chile y simulación computacional</h3>
 
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
 ![PHP](https://img.shields.io/badge/PHP-777BB4?style=for-the-badge&logo=php&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![Pyglet](https://img.shields.io/badge/Pyglet-2.1%2B-74B900?style=for-the-badge)
 ![ModernGL](https://img.shields.io/badge/ModernGL-5.10%2B-2D2D2D?style=for-the-badge)
-![Scala](https://img.shields.io/badge/Scala-3.8.2-DC322F?style=for-the-badge&logo=scala&logoColor=white)
 
 <p>
-  FurFan reúne una base de datos relacional y una aplicación web para explorar la biodiversidad de Chile. El portafolio también incluye simulaciones gráficas y un sistema de combate por turnos en Scala.
+  FurFan reúne una base de datos relacional y una aplicación web para explorar la biodiversidad de Chile. El portafolio también incluye Cells'War, una simulación de poblaciones celulares.
 </p>
 
 </div>
@@ -24,11 +23,7 @@
 - [Biodiversidad de Chile](#bases-de-datos-biodiversidad-de-chile)
   - [Mi aporte](#mi-aporte)
   - [Consultas de la aplicación](#consultas-de-la-aplicación)
-- [Otros proyectos](#otros-proyectos)
 - [Cells'War](#cellswar)
-- [Redes de impulsos nerviosos](#redes-de-impulsos-nerviosos)
-- [Sistema de turnos en Scala](#poo-sistema-de-turnos-en-scala)
-- [Alcance de los modelos](#alcance-de-los-modelos)
 
 ## Bases de datos: Biodiversidad de Chile
 
@@ -50,21 +45,6 @@ El proyecto organiza información sobre especies presentes en Chile. El modelo r
 ### Modelo entidad-relación
 
 ![Modelo entidad-relación del proyecto de biodiversidad](assets/modelo_entidad_relacion.jpg)
-
----
-
-## Otros proyectos
-
-| Proyecto | Objetivo principal | Tecnologías y conceptos principales |
-| --- | --- | --- |
-| **Cells'War** | Representar la interacción entre células normales, células blancas y células cancerígenas. | NumPy, SciPy, Pyglet, ModernGL y KD-Tree |
-| **Redes de impulsos nerviosos** | Explorar la propagación de impulsos en una red de neuronas representada como un grafo en 3D. | Python, ModernGL, Pyglet, Dijkstra y Prim |
-| **Scala y POO** | Modelar un combate por turnos e integrar sus acciones y el control de turnos. | Scala 3, POO, Visitor, sbt y MUnit |
-
-> [!NOTE]
-> Las simulaciones son modelos visuales simplificados. Su propósito es explorar
-> técnicas de simulación y computación gráfica, no reproducir con exactitud un
-> sistema biológico o físico real.
 
 ---
 
@@ -127,108 +107,8 @@ ModernGL administra el renderizado sobre un contexto **OpenGL 3.3 o superior**. 
 
 ---
 
-## Redes de impulsos nerviosos
-
-![Simulación de redes](assets/redcompleja.JPG)
-
-La idea es utilizar las propiedades de los grafos para representar una red de neuronas y observar cómo se propaga un impulso entre ellas. Los vértices representan las neuronas y las aristas sus conexiones. La vista 3D permite recorrer la red y comparar la propagación con una ruta mínima o un árbol de costo mínimo.
-
-### Características principales
-
-- Parte con **120 neuronas** distribuidas en el espacio, con conexiones cercanas y algunos enlaces largos.
-- Cada neurona pasa por reposo, disparo y un período refractario que limita las activaciones seguidas.
-- Para evitar loops de propagación, cada onda puede activar una sola vez a cada neurona, aunque encuentre otro camino para regresar.
-- Utiliza **Dijkstra** para calcular la ruta con menor suma de distancias entre dos neuronas. El impulso de esa ruta no se bifurca.
-- Utiliza **Prim** para construir el árbol que conecta la distribución inicial y para calcular el árbol de costo mínimo de la red final. Al mostrarlo, las demás conexiones siguen transmitiendo pulsos.
-- Separa la lógica del grafo de la visualización, lo que permite comprobar el modelo sin abrir una ventana.
-- Dibuja neuronas, impulsos, conexiones y botones con ModernGL, reutilizando buffers. Pyglet mantiene la ventana, los eventos y los textos.
-
-### Controles
-
-| Control | Acción |
-| :---: | --- |
-| Clic izquierdo sobre una neurona | Inicia un pulso si está en reposo. |
-| Arrastrar con el botón izquierdo | Gira la cámara alrededor de la red. |
-| Rueda del mouse | Acerca o aleja la cámara. |
-| `Espacio` | Intenta iniciar una onda desde una neurona aleatoria. |
-| `P` | Calcula una ruta mínima entre dos neuronas aleatorias e intenta enviar un impulso por ella. |
-| `M` | Muestra u oculta el árbol de costo mínimo. |
-| `R` | Genera otra red y borra la actividad anterior. |
-| `C` | Restablece la orientación y centra la cámara. |
-| `Esc` | Cierra la simulación. |
-
-### Requisitos
-
-- Python; esta versión se probó con **Python 3.11.4** en Windows.
-- **Pyglet 2.1** y **ModernGL 5** para la ventana y el renderizado.
-- Un controlador gráfico con soporte del contexto OpenGL 3.3 que utiliza ModernGL.
-
-El archivo `requirements.txt` del comprimido especifica `pyglet>=2.1,<3` y `moderngl>=5.10,<6`. La lógica de grafos se mantiene independiente de estas dependencias gráficas.
-
-### Cómo ejecutarlo
-
-La versión actualizada está en [Redes_complejas.zip](Redes_complejas.zip). Desde la carpeta del repositorio, ejecuta lo siguiente en PowerShell:
-
-```powershell
-Expand-Archive -LiteralPath .\Redes_complejas.zip -DestinationPath .\Redes_complejas -Force
-Set-Location .\Redes_complejas\3D_neuronas
-py -m pip install -r requirements.txt
-py .\simulacion_red_neuronal_3d.py
-```
-
-Dentro de `3D_neuronas` se incluyen la explicación del modelo, los parámetros para experimentar y las pruebas del núcleo. Para ejecutar esas pruebas desde la misma carpeta:
-
-```powershell
-py -m unittest discover -s tests -v
-```
-
----
-
-## POO: Sistema de turnos en Scala
-
-**Proyecto académico · Scala 3 · MUnit**  
-**Etapa actual:** modelo del juego y controlador de combate integrados.
-
-La idea es desarrollar la lógica de un videojuego por turnos a partir de personajes, enemigos, armas, pociones y paneles de mapa. El controlador ya conecta estas entidades con las acciones disponibles y el avance de los turnos.
-
-**Aspectos implementados:**
-
-- Jerarquías de unidades, armas, pociones y acciones, con compatibilidad de equipamiento según el personaje.
-- Ataques físicos, consumo de pociones, equipamiento y movimiento entre paneles adyacentes.
-- Hechizos de magia blanca y negra, con validación y consumo de maná.
-- Inventarios y acciones disponibles según el estado de la unidad; uso de Visitor para distinguir armas y pociones.
-- Barras de acción basadas en el peso de la unidad y su arma. `TurnScheduler` selecciona las unidades listas según el excedente de barra.
-- `GameController` que valida quién tiene el turno, ejecuta una acción por nombre, descarta unidades derrotadas del planificador y avanza después de una acción exitosa.
-- Reinicio del combate mediante `resetGame()`, que restaura el estado de las unidades capturado al crear el controlador.
-- Pruebas con MUnit para las entidades, las acciones, los turnos, el controlador y la configuración del proyecto.
-
-El código actualizado está en [ProyectoScala](ProyectoScala/README.md), organizado en `src/main/scala` y `src/test/scala`. Incluye la configuración de sbt para ejecutar las pruebas desde esa carpeta:
-
-```powershell
-Set-Location .\ProyectoScala
-sbt test
-```
-
-> **Siguiente etapa propuesta:** conectar el combate con una interfaz y completar el flujo de partida, incluida la condición de victoria. La lógica actual todavía no incluye una entrada interactiva para jugar.
-
-## Alcance de los modelos
-
-Estas simulaciones permiten estudiar y visualizar:
-
-- interacciones locales entre agentes;
-- estructuras de búsqueda espacial;
-- crecimiento y propagación de poblaciones;
-- uso de grafos y sus propiedades;
-- aplicaciones de técnicas gráficas relacionadas con la biología.
-
-Los resultados deben interpretarse como aproximaciones computacionales con
-fines educativos y experimentales.
-
----
-
 <div align="center">
 
 Bases de datos, desarrollo web y simulación computacional.
-
 
 </div>
