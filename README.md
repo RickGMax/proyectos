@@ -126,7 +126,7 @@ ModernGL administra el renderizado sobre un contexto **OpenGL 3.3 o superior**. 
 
 ## Sistema de turnos en Scala
 
-Proyecto académico en Scala 3 que modela un combate por turnos. Incluye un controlador de acciones, un planificador por barras de acción y pruebas con MUnit. [Código e instrucciones de la versión archivada](https://github.com/RickGMax/proyectos/tree/ec16bc8c8b51eee6617754ea3ba9a2b6aeab2826/ProyectoScala)
+Proyecto académico en Scala 3 que modela un combate por turnos. Incluye un controlador de acciones, un planificador por barras de acción y pruebas con MUnit. [Ver carpeta ProyectoScala](ProyectoScala/) · [Requisitos y pruebas](ProyectoScala/README.md#requisitos-y-pruebas)
 
 ---
 
