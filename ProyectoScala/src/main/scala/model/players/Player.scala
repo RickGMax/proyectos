@@ -10,6 +10,7 @@ import cl.uchile.dcc.model.units.GameUnit
  */
 class Player(initialUnits: Seq[GameUnit]) {
   private val playerUnits: Vector[GameUnit] = initialUnits.toVector
+  private var defeatObservers: Vector[() => Unit] = Vector.empty
 
   require(
     playerUnits.forall(_.player.isEmpty),
@@ -24,4 +25,16 @@ class Player(initialUnits: Seq[GameUnit]) {
   /** Returns true when no controlled unit remains alive. */
   def defeated: Boolean =
     playerUnits.forall(_.lifePoints <= 0.0)
+
+  /** Registers an observer to be called when this player loses the last unit. */
+  private[dcc] def addDefeatObserver(observer: () => Unit): Unit = {
+    defeatObservers = defeatObservers :+ observer
+  }
+
+  /** Notifies the observers after the last living unit is defeated. */
+  private[model] def notifyIfDefeated(): Unit = {
+    if (defeated) {
+      defeatObservers.foreach(observer => observer())
+    }
+  }
 }

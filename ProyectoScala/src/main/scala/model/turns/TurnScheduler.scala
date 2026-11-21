@@ -14,7 +14,7 @@ class TurnScheduler:
   def units: Seq[GameUnit] =
     actionBars.keys.toSeq
 
-  /**Registers a units with an initial action bar of 0.0 */
+  /** Sets the unit's action bar to zero, registering it if needed. */
   def addUnit(unit:GameUnit):Unit =
     actionBars(unit) = 0.0
 
@@ -63,9 +63,7 @@ class TurnScheduler:
   private def excess(unit:GameUnit):Double =
     actionBars(unit) - unit.actionBarMaximum
 
-  /**Keeps only units with a completed bar and orders them from
-   * greatest to small excess. The negative value reverses sortBy's
-   * default ascending order*/
+  /** Returns units with completed bars, ordered by excess from highest to lowest. */
   def completedUnits:Seq[GameUnit] =
     actionBars.keys.filter(hasCompletedBar).toSeq.sortBy(unit => -excess(unit))
 

@@ -664,7 +664,7 @@ class EntitiesTest extends FunSuite:
     assertEquals(completed(1),enemy1)
 
 
-  test("a turn scheduler selects unit with the mayor excess"):
+  test("a turn scheduler selects the unit with the greatest excess"):
     val enemy1 = new Enemy(
       "Vergil",
       100.0,
@@ -736,7 +736,7 @@ class EntitiesTest extends FunSuite:
     assertEquals(controller.nextTurn(), Some(heavy))
     assertEquals(controller.currentUnit, Some(heavy))
 
-  test("A controller without units not has next turn"):
+  test("a controller without units has no next turn"):
     val controller = new GameController(Seq.empty[GameUnit])
 
     assertEquals(controller.nextTurn(),None)
@@ -805,7 +805,7 @@ class EntitiesTest extends FunSuite:
     assertEquals(receivedTarget,Some(target))
 
 
-  test("an enemy rejects an action wihout enemy execution support"):
+  test("an enemy rejects an action without enemy execution support"):
     val enemy = new Enemy("Vergil", 100.0, 20, 5, 50.0)
     val target = new Enemy("Mundus", 100.0, 20, 5, 40.0)
 
@@ -2599,6 +2599,37 @@ class EntitiesTest extends FunSuite:
     assertEquals(origin.units.toSeq, Seq[GameUnit](character))
     assert(destination.units.isEmpty)
     assertEquals(controller.currentUnit, Some(character))
+  }
+
+  test("configured movement destinations must be one orthogonal step away") {
+    val enemy = new Enemy("Vergil", 100.0, 20, 5, 40.0)
+    val origin = new Panel(Int.MaxValue, 1, Array[GameUnit](enemy), Array.empty)
+    val adjacent = new Panel(Int.MaxValue, 2, Array.empty, Array.empty)
+    val diagonal = new Panel(Int.MaxValue - 1, 2, Array.empty, Array.empty)
+    val remote = new Panel(Int.MaxValue - 2, 1, Array.empty, Array.empty)
+    val wrapped = new Panel(Int.MinValue, 1, Array.empty, Array.empty)
+    val invalid = Array(diagonal, remote, wrapped)
+
+    origin.setAdjacentPanels(invalid)
+    assertEquals(enemy.findAction("Move"), None)
+
+    origin.setAdjacentPanels(invalid :+ adjacent)
+    assert(enemy.findAction("Move").nonEmpty)
+    val controller = new GameController(Seq(enemy))
+    assertEquals(controller.nextTurn(), Some(enemy))
+
+    invalid.foreach { destination =>
+      intercept[IllegalArgumentException] {
+        controller.executeAction(enemy, "Move", destination)
+      }
+      assertEquals(controller.currentUnit, Some(enemy))
+      assertEquals(enemy.currentPanel, Some(origin))
+      assert(destination.units.isEmpty)
+    }
+
+    controller.executeAction(enemy, "Move", adjacent)
+    assertEquals(enemy.currentPanel, Some(adjacent))
+    assert(origin.units.isEmpty)
   }
 
   test("movement availability follows placement and adjacent destinations") {

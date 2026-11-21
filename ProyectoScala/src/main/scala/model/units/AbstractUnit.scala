@@ -70,9 +70,7 @@ abstract class AbstractUnit(
 
   /** Returns movement for a living unit with an adjacent destination. */
   protected def movementActions: Seq[Action] = {
-    val hasDestination = currentPanel.exists { origin =>
-      origin.adjacent.exists(destination => destination ne origin)
-    }
+    val hasDestination = currentPanel.exists(_.movementDestinations.hasNext)
 
     if (lifePoints > 0.0 && hasDestination) Seq(moveAction)
     else Seq.empty
@@ -96,7 +94,7 @@ abstract class AbstractUnit(
       "The destination must differ from the current panel."
     )
     require(
-      origin.adjacent.exists(_ eq destination),
+      origin.movementDestinations.exists(_ eq destination),
       "The destination must be adjacent to the current panel."
     )
 
@@ -112,10 +110,12 @@ abstract class AbstractUnit(
     storedPanel = panel
   }
 
-  /** Removes this unit from its panel when defeated. */
-  private def removeFromPanelIfDefeated(): Unit = {
+  /** Applies damage and informs the owner after a lethal hit. */
+  private def applyDamage(damage: Double): Unit = {
+    storedLifePoints = math.max(0.0, storedLifePoints - damage)
     if (lifePoints <= 0.0) {
       storedPanel.foreach(_.removeUnit(this))
+      storedPlayer.foreach(_.notifyIfDefeated())
     }
   }
 
@@ -139,8 +139,7 @@ abstract class AbstractUnit(
       "Magical damage must be finite and non-negative."
     )
 
-    storedLifePoints = math.max(0.0, storedLifePoints - damage)
-    removeFromPanelIfDefeated()
+    applyDamage(damage)
   }
 
 
@@ -229,7 +228,6 @@ abstract class AbstractUnit(
     )
 
     val damage = math.max(0.0, attackPoints.toDouble - defense)
-    storedLifePoints = math.max(0.0, storedLifePoints - damage)
-    removeFromPanelIfDefeated()
+    applyDamage(damage)
   }
 }

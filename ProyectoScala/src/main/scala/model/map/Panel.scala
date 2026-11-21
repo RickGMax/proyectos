@@ -27,8 +27,15 @@ class Panel(
   /** Returns a copy of this panel's units. */
   def units: Array[GameUnit] = storedUnits.clone()
 
-  /** Returns a copy of this panel's adjacent panels. */
+  /** Returns a copy of the configured neighbors. */
   def adjacent: Array[Panel] = storedAdjacent.clone()
+
+  /** Iterates over configured destinations one orthogonal step away. */
+  private[model] def movementDestinations: Iterator[Panel] =
+    storedAdjacent.iterator.filter { destination =>
+      destination != null &&
+        math.abs(destination.x.toLong - x) + math.abs(destination.y.toLong - y) == 1L
+    }
 
   /** Returns whether this unit is present in the panel. */
   def containsUnit(unit: GameUnit): Boolean =
@@ -89,7 +96,7 @@ class Panel(
     targets.foreach(_.receiveMeteoriteDamage(source, action, damage))
   }
 
-  /** Receives a moving unit after its movement requirements are validated. */
+  /** Delegates movement to the unit, which validates the destination. */
   override def receiveMove(source: GameUnit, action: Move): Unit = {
     source.moveTo(this)
   }
