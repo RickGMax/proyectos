@@ -2,16 +2,17 @@
 
 <h1>Proyectos</h1>
 
-<h3>Simulaciones gráficas, bases de datos y proyectos escalables</h3>
+<h3>Biodiversidad de Chile, simulaciones gráficas y programación orientada a objetos</h3>
 
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
+![PHP](https://img.shields.io/badge/PHP-777BB4?style=for-the-badge&logo=php&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![Pyglet](https://img.shields.io/badge/Pyglet-2.1%2B-74B900?style=for-the-badge)
 ![ModernGL](https://img.shields.io/badge/ModernGL-5.10%2B-2D2D2D?style=for-the-badge)
 ![Scala](https://img.shields.io/badge/Scala-3.8.2-DC322F?style=for-the-badge&logo=scala&logoColor=white)
-![SQL](https://img.shields.io/badge/SQL-Database-4479A1?style=for-the-badge&logo=postgresql&logoColor=white)
 
 <p>
-  Proyectos e ideas para explorar temas de biología, computación gráfica, teoría de grafos, bases de datos y programación orientada a objetos.
+  FurFan reúne una base de datos relacional y una aplicación web para explorar la biodiversidad de Chile. El portafolio también incluye simulaciones gráficas y un sistema de combate por turnos en Scala.
 </p>
 
 </div>
@@ -20,21 +21,45 @@
 
 ## Contenido
 
-- [Descripción general](#descripción-general)
+- [Biodiversidad de Chile](#bases-de-datos-biodiversidad-de-chile)
+  - [Mi aporte](#mi-aporte)
+  - [Consultas de la aplicación](#consultas-de-la-aplicación)
+- [Otros proyectos](#otros-proyectos)
 - [Cells'War](#cellswar)
 - [Redes de impulsos nerviosos](#redes-de-impulsos-nerviosos)
-- [Biodiversidad de Chile](#bases-de-datos-biodiversidad-de-chile)
 - [Sistema de turnos en Scala](#poo-sistema-de-turnos-en-scala)
 - [Alcance de los modelos](#alcance-de-los-modelos)
 
+## Bases de datos: Biodiversidad de Chile
 
-## Descripción general
+**FurFan · Proyecto académico grupal de Bases de Datos (CC3201)**
+
+El proyecto organiza información sobre especies presentes en Chile. El modelo relaciona especies con sus nombres comunes y sinónimos, su distribución regional y sus clasificaciones de conservación actuales e históricas. También representa la jerarquía taxonómica desde reino hasta especie. [Explorar FurFan Web](https://grupo36.cc3201.dcc.uchile.cl/).
+
+### Mi aporte
+
+- **Modelo relacional.** Diseñé el esquema relacional a partir del modelo entidad-relación. Definí las tablas y sus claves, incluidas las relaciones que vinculan especies con regiones y conectan los niveles de la jerarquía taxonómica. Revisé la normalización del esquema con la forma normal de Boyce-Codd (FNBC).
+- **Implementación web y consultas.** Implementé la interfaz en HTML, CSS y JavaScript y la conecté a PostgreSQL mediante una API en PHP con PDO. Integré consultas SQL parametrizadas y presenté los resultados con filtros, tablas y paginación en la búsqueda de especies.
+- **Desarrollo asistido por IA.** Usé Codex para revisar consultas SQL, preparar pruebas y diagnosticar datos faltantes. Por ejemplo, comparé los vínculos entre filo y reino en PostgreSQL con los registros de origen para corregir clasificaciones incompletas.
+
+### Consultas de la aplicación
+
+1. **Búsqueda de especies.** Busca por nombre científico, nombre común o sinónimo. Permite filtrar por región, grupo biológico y categoría de conservación.
+2. **Endemismo por región.** Compara la cantidad y el porcentaje de especies endémicas por grupo biológico dentro de una región. Permite indicar un mínimo de especies endémicas.
+3. **Clasificación taxonómica.** A partir del nombre científico exacto, muestra el reino, filo, clase, orden y familia de la especie, junto con el número de especies registradas en esa familia.
+
+### Modelo entidad-relación
+
+![Modelo entidad-relación del proyecto de biodiversidad](assets/modelo_entidad_relacion.jpg)
+
+---
+
+## Otros proyectos
 
 | Proyecto | Objetivo principal | Tecnologías y conceptos principales |
 | --- | --- | --- |
 | **Cells'War** | Representar la interacción entre células normales, células blancas y células cancerígenas. | NumPy, SciPy, Pyglet, ModernGL y KD-Tree |
 | **Redes de impulsos nerviosos** | Explorar la propagación de impulsos en una red de neuronas representada como un grafo en 3D. | Python, ModernGL, Pyglet, Dijkstra y Prim |
-| **Biodiversidad de Chile** | Modelar información sobre especies, regiones y clasificaciones de conservación. | Modelo entidad-relación, modelo relacional y FNBC |
 | **Scala y POO** | Modelar un combate por turnos e integrar sus acciones y el control de turnos. | Scala 3, POO, Visitor, sbt y MUnit |
 
 > [!NOTE]
@@ -160,29 +185,6 @@ py -m unittest discover -s tests -v
 
 ---
 
-## Bases de datos: Biodiversidad de Chile
-
-**Proyecto académico grupal**  
-
-Diseño de una base de datos para organizar información sobre especies presentes en Chile y facilitar la consulta de su taxonomía, distribución regional y estado de conservación.
-
-**Aspectos del modelo:**
-
-- Jerarquía taxonómica desde reino hasta especie.
-- Distribución de especies por región.
-- Nombres comunes y sinónimos de cada especie.
-- Clasificaciones de conservación actuales e históricas.
-- Modelo entidad-relación, esquema relacional y análisis de FNBC.
-- [Página del proyecto](https://grupo36.cc3201.dcc.uchile.cl/).
-
-**Modelo entidad-relación**
-
-![Modelo entidad-relación del proyecto de biodiversidad](assets/modelo_entidad_relacion.jpg)
-
-
-
----
-
 ## POO: Sistema de turnos en Scala
 
 **Proyecto académico · Scala 3 · MUnit**  
@@ -227,8 +229,7 @@ fines educativos y experimentales.
 
 <div align="center">
 
-Desarrollado como una exploración de **simulación**, **física** y
-**computación gráfica**.
+Bases de datos, desarrollo web y simulación computacional.
 
 
 </div>
